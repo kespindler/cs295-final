@@ -10,18 +10,34 @@ from numpy import array
 #3 is key
 #4 is lock
 #5 is door
-lightroom_string = """\
-1111111111111
-12   111   11
-1    5   3 11
-1    111   11
-13   111   11
-1    41151411
-1    111   11
-11111111   61
-11111111   11
-1111111115111
-1111111111111"""
+room1="""\
+1111111
+12   11
+1    51
+1    11
+13   11
+1    41
+1    11
+1111111"""
+
+room2="""\
+111111
+11   1
+12 3 1
+11   1
+11   1
+115141
+111111"""
+
+room3="""\
+111111   
+121111
+1   11
+1   61
+1   11
+115111
+111111"""
+
 class LightroomRenderer(PygameRenderer):
     def fill_grid(self):
         for i in range(self.maze.states.shape[0]):
@@ -47,13 +63,15 @@ def arr_from_str(string):
     lines = string.split('\n')
     return array([[int(z) for z in l] for l in lines])
 
-structure = arr_from_str(lightroom_string)
-print structure
-lock_pairs = {}
-lock_pairs[5,5] = (5, 2)
-lock_pairs[10,5] = (8, 5)
-lock_pairs[11,7] = (9, 9)
-env = Lightroom(structure, (9, 9), lock_pairs)
+room1 = arr_from_str(room1)
+room2 = arr_from_str(room2)
+room3 = arr_from_str(room3)
+#print structure
+#lock_pairs = {}
+#lock_pairs[5,5] = (5, 2)
+#lock_pairs[10,5] = (8, 5)
+#lock_pairs[11,7] = (9, 9)
+env = Lightroom(room1, room2, room3)
 agent = RandomAgent()
 rend = LightroomRenderer(env)
 
