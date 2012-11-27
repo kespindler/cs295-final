@@ -40,9 +40,9 @@ room3="""\
 111111"""
 
 class LightroomRenderer(PygameRenderer):
-    def __init__(self, **kwargs):
-        print kwargs
-        PygameRenderer.__init__(self, kwargs)
+    def __init__(self, env):
+        #print kwargs
+        PygameRenderer.__init__(self, env)
         pygame.display.set_mode((640, 480))
 
     def fill_grid(self):
