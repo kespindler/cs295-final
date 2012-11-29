@@ -1,16 +1,21 @@
 from pylov import run_experiment
 from pylov.pygamerenderer import PygameRenderer, GREEN, LIGHTGREY, img_point, FIELD_SIZE
 from pylov.lightroom import Lightroom, field
+from pylov.pylov_bridge import BridgeAgent
+from pybrain.rl.agents import LearningAgent
+from pybrain.rl.learners import Q, SARSA
+from pybrain.rl.learners.valuebased import ActionValueTable
 from pylov.agent import RandomAgent
 from numpy import array
 import pygame
 
 #0, ' ' is empty
 #1 is wall
-#2 is player
+#2 is initial position of agent
 #3 is key
 #4 is lock
 #5 is door
+#6 is a lock that does not require a key
 room1="""\
 1111111
 12   11
@@ -49,7 +54,6 @@ class LightroomRenderer(PygameRenderer):
         for i in range(self.maze.states.shape[0]):
             for j in range(self.maze.states.shape[1]):
                 if self.maze.states[i, j] == field.WALL:
-                    color = GREEN
                     self.screen.fill(GREEN, self.make_rect(i,j))
                 else:
                     self.screen.fill(LIGHTGREY, self.make_rect(i,j))
@@ -73,7 +77,9 @@ room1 = arr_from_str(room1)
 room2 = arr_from_str(room2)
 room3 = arr_from_str(room3)
 env = Lightroom(room1, room2, room3)
-agent = RandomAgent()
+#agent = RandomAgent()
+#agent = BridgeAgent(LearningAgent, ActionValueTable, SARSA, 56, 6)
+agent = BridgeAgent(LearningAgent, ActionValueTable, SARSA, [56, 6], [0.1, 0.99])
 rend = LightroomRenderer(env)
 
 run_experiment(env, agent, rend)
