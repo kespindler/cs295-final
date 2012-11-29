@@ -79,7 +79,9 @@ room3 = arr_from_str(room3)
 env = Lightroom(room1, room2, room3)
 #agent = RandomAgent()
 #agent = BridgeAgent(LearningAgent, ActionValueTable, SARSA, 56, 6)
-agent = BridgeAgent(LearningAgent, ActionValueTable, SARSA, [56, 6], [0.1, 0.99])
+# The first array should be the observation space of the environment...
+# We should be able to calculate this.
+agent = BridgeAgent(LearningAgent, ActionValueTable, SARSA, [56, 6, 12], [0.1, 0.99])
 rend = LightroomRenderer(env)
 
 run_experiment(env, agent, rend)
