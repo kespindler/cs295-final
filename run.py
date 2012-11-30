@@ -72,10 +72,22 @@ def arr_from_str(string):
     lines = string.split('\n')
     return array([[int(z) for z in l] for l in lines]).T
 
-room1 = arr_from_str(room1)
-room2 = arr_from_str(room2)
-room3 = arr_from_str(room3)
-env = Lightroom(room1, room2, room3)
+def uniform_arr(*strings):
+    maxw = max(max(len(l) for l in string) for string in strings)
+    maxh = max(len(string.split('\n')) for string in strings)
+    r = []
+    for s in strings:
+        s = s.replace(' ', '0')
+        lines = s.split('\n')
+        m = [[int(z) for z in l + '1'*(maxw-len(l))] for l in lines]
+        m.extend([1]*maxw for _ in range(maxh-len(m)))
+        r.append(array(m).T)
+    return r
+
+#room1 = arr_from_str(room1)
+#room2 = arr_from_str(room2)
+#room3 = arr_from_str(room3)
+env = Lightroom(uniform_arr(room1, room2, room3))
 #agent = RandomAgent()
 #agent = BridgeAgent(LearningAgent, ActionValueTable, SARSA, 56, 6)
 # The first array should be the observation space of the environment...
