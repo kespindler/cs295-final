@@ -15,7 +15,6 @@ import pygame
 #3 is key
 #4 is lock
 #5 is door
-#6 is a lock that does not require a key
 room1="""\
 1111111
 12   11
@@ -39,7 +38,7 @@ room3="""\
 111111
 121111
 1   11
-1   61
+1   41
 1   11
 115111
 111111"""
