@@ -1,13 +1,14 @@
 from pylov import run_experiment
 from pylov.pygamerenderer import PygameRenderer, GREEN, LIGHTGREY, img_point, FIELD_SIZE
-from pylov.lightroom import Lightroom, field
-from pylov.pylov_bridge import BridgeAgent
+from pylov.lightroom import Lightroom
+#from pylov.pylov_bridge import BridgeAgent
 from pybrain.rl.agents import LearningAgent
 from pybrain.rl.learners import Q, SARSA
 from pybrain.rl.learners.valuebased import ActionValueTable
 from pylov.agent import RandomAgent
 from numpy import array
 import pygame
+from lightroom import OptionAgent2
 
 #0, ' ' is empty
 #1 is wall
@@ -52,18 +53,18 @@ class LightroomRenderer(PygameRenderer):
     def fill_grid(self):
         for i in range(self.maze.states.shape[0]):
             for j in range(self.maze.states.shape[1]):
-                if self.maze.states[i, j] == field.WALL:
+                if self.maze.states[i, j] == Lightroom.field.WALL:
                     self.screen.fill(GREEN, self.make_rect(i,j))
                 else:
                     self.screen.fill(LIGHTGREY, self.make_rect(i,j))
-                    if self.maze.states[i,j] == field.KEY:
+                    if self.maze.states[i,j] == Lightroom.field.KEY:
                         self.screen.blit(self.key_img, img_point(i,j))
-                    elif self.maze.states[i,j] == field.KEY_LOCK:
+                    elif self.maze.states[i,j] == Lightroom.field.KEY_LOCK:
                         self.screen.blit(self.lock_img, img_point(i,j))
                         self.screen.blit(self.key_img, img_point(i,j))
-                    elif self.maze.states[i,j] == field.LOCK_DOOR:
+                    elif self.maze.states[i,j] == Lightroom.field.LOCK_DOOR:
                         self.screen.blit(self.door_img, img_point(i,j))
-                    elif self.maze.states[i,j] == field.KEYLESS_LOCK:
+                    elif self.maze.states[i,j] == Lightroom.field.KEYLESS_LOCK:
                         self.screen.blit(self.lock_img, img_point(i,j))
         self.screen.blit(self.goal_img, img_point(*self.maze.goal))
 
@@ -88,11 +89,12 @@ def uniform_arr(*strings):
 #room2 = arr_from_str(room2)
 #room3 = arr_from_str(room3)
 env = Lightroom(uniform_arr(room1, room2, room3))
+agent = OptionAgent2()
 #agent = RandomAgent()
 #agent = BridgeAgent(LearningAgent, ActionValueTable, SARSA, 56, 6)
 # The first array should be the observation space of the environment...
 # We should be able to calculate this.
-agent = BridgeAgent(LearningAgent, ActionValueTable, SARSA, [56, 6, 12], [0.1, 0.99])
+#agent = BridgeAgent(LearningAgent, ActionValueTable, SARSA, [56, 6, 12], [0.1, 0.99])
 rend = LightroomRenderer(env)
 
 run_experiment(env, agent, rend)
