@@ -9,7 +9,7 @@ from pylov.agent import RandomAgent
 from numpy import array
 import pygame
 from lightroom import OptionAgent2
-
+import pylov.lightroom_gen as lrg
 #0, ' ' is empty
 #1 is wall
 #2 is initial position of agent
@@ -48,7 +48,7 @@ class LightroomRenderer(PygameRenderer):
     def __init__(self, env):
         #print kwargs
         PygameRenderer.__init__(self, env)
-        pygame.display.set_mode((640, 480))
+        #pygame.display.set_mode((640, 480))
 
     def fill_grid(self):
         for i in range(self.maze.states.shape[0]):
@@ -86,9 +86,14 @@ def uniform_arr(*strings):
 #room1 = arr_from_str(room1)
 #room2 = arr_from_str(room2)
 #room3 = arr_from_str(room3)
-env = Lightroom(uniform_arr(room1, room2, room3))
-agent = OptionAgent2()
-#agent = RandomAgent()
+lr = lrg.LightroomGen()
+room1 = lr.make_rand_room()
+room2 = lr.make_rand_room()
+room3 = lr.make_rand_room()
+
+env = Lightroom(room1, room2, room3)
+#agent = OptionAgent2()
+agent = RandomAgent()
 #agent = BridgeAgent(LearningAgent, ActionValueTable, SARSA, 56, 6)
 # The first array should be the observation space of the environment...
 # We should be able to calculate this.
