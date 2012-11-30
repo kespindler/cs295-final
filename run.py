@@ -59,13 +59,11 @@ class LightroomRenderer(PygameRenderer):
                     self.screen.fill(LIGHTGREY, self.make_rect(i,j))
                     if self.maze.states[i,j] == Lightroom.field.KEY:
                         self.screen.blit(self.key_img, img_point(i,j))
-                    elif self.maze.states[i,j] == Lightroom.field.KEY_LOCK:
+                    elif self.maze.states[i,j] == Lightroom.field.LOCK:
                         self.screen.blit(self.lock_img, img_point(i,j))
                         self.screen.blit(self.key_img, img_point(i,j))
-                    elif self.maze.states[i,j] == Lightroom.field.LOCK_DOOR:
+                    elif self.maze.states[i,j] == Lightroom.field.DOOR:
                         self.screen.blit(self.door_img, img_point(i,j))
-                    elif self.maze.states[i,j] == Lightroom.field.KEYLESS_LOCK:
-                        self.screen.blit(self.lock_img, img_point(i,j))
         self.screen.blit(self.goal_img, img_point(*self.maze.goal))
 
 def arr_from_str(string):
