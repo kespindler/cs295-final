@@ -71,21 +71,35 @@ class PygameRenderer(RenderEngine):
         #    color = tuple([max(0, int(val/max_val*0xff))]*3)
         #    pygame.draw.polygon(self.screen, color, [point_list[k], center, point_list[(k+1)%4]])
 
+    #def fill_grid(self):
+    #    if self.agent is not None:
+    #        max_val = int(1 + self.agent.pyb_agent.learner.module.params.max())
+    #    for i in range(self.maze.states.shape[0]):
+    #        for j in range(self.maze.states.shape[1]):
+    #            if self.maze.states[i, j] == field.WALL:
+    #                self.screen.fill(GREEN, self.make_rect(i,j))
+    #            else:
+    #                if self.agent is None:
+    #                    self.screen.fill(LIGHTGREY, self.make_rect(i,j))
+    #                else:
+    #                    self.fill_triangle(i,j, max_val)
+    #    self.screen.blit(self.goal_img, img_point(*self.maze.goal))
+        
     def fill_grid(self):
-        if self.agent is not None:
-            max_val = int(1 + self.agent.pyb_agent.learner.module.params.max())
         for i in range(self.maze.states.shape[0]):
             for j in range(self.maze.states.shape[1]):
                 if self.maze.states[i, j] == field.WALL:
-                    color = GREEN
                     self.screen.fill(GREEN, self.make_rect(i,j))
                 else:
-                    if self.agent is None:
-                        self.screen.fill(LIGHTGREY, self.make_rect(i,j))
-                    else:
-                        self.fill_triangle(i,j, max_val)
+                    self.screen.fill(LIGHTGREY, self.make_rect(i,j))
+                    if self.maze.states[i,j] == field.KEY:
+                        self.screen.blit(self.key_img, img_point(i,j))
+                    elif self.maze.states[i,j] == field.DOOR:
+                        self.screen.blit(self.door_img, img_point(i,j))
+                    elif self.maze.states[i,j] == field.LOCK:
+                        self.screen.blit(self.lock_img, img_point(i,j))
         self.screen.blit(self.goal_img, img_point(*self.maze.goal))
-        
+
     def update(self, state):
         self.screen.convert()
         self.fill_grid()
