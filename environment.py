@@ -83,6 +83,10 @@ class Lightworld(Environment):
 
     def new_state(self):
         pos = choice(filter_states(self.states, self.field.INIT))
+        x,y = pos
+        x = x[0,0]
+        y = y[0,0]
+        pos = x,y
         return self.calculate_state(pos)
 
     def perform_action(self, state, action):
