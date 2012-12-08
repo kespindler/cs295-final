@@ -1,7 +1,7 @@
 import heapq
 from collections import namedtuple
 
-Node = namedtuple('Node', ['priority', 'state', 'parent'])
+Node = namedtuple('Node', ['priority', 'state', 'parent', 'dist'])
 
 def manhattan_dist(a,b):
     ax,ay = a
@@ -17,7 +17,7 @@ def best_first_graph_search(start, end, f, expand_state):
     There is a subtlety: the line "f = memoize(f, 'f')" means that the f
     values will be cached on the nodes as they are computed. So after doing
     a best first search you can examine the f values of the path returned."""
-    node = Node(0, start, None)
+    node = Node(0, start, None, 0)
     if node.state == end:
         return [node.state]
     frontier = []
@@ -31,7 +31,7 @@ def best_first_graph_search(start, end, f, expand_state):
             break
         explored.add(node.state)
         for s in expand_state(node.state):
-            child = Node(node.priority + 1, s, node)
+            child = Node(node.dist + f(s, end), s, node, node.dist+1)
             if child.state not in explored:# their implementation also had: `and child not in frontier:`
                 frontier.append(child)
             #elif child in frontier:

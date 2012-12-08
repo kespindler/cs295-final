@@ -1,4 +1,5 @@
 from time import sleep
+from numpy import array
 
 def enum(*sequential,**named):
     enums = dict(zip(sequential, range(len(sequential))),**named)
@@ -10,12 +11,9 @@ def enum(*sequential,**named):
 def run_experiment(env, agent, rend = None, steps = None, delay = 0):
     i = 0
     def run_interaction(state, render=False):
-        obs = env.observation(state)
-        action = agent.choose_action(env, obs)
-        #observation, reward for a pomdp
+        action = agent.choose_action(env, state)
         state2, reward = env.perform_action(state, action)
-        obs2 = env.observation(state)
-        agent.feedback(obs, action, reward, obs2)
+        agent.feedback(state, action, reward, state2)
         if render and rend is not None:
             rend.update(state2)
         return state2
@@ -36,4 +34,22 @@ def run_experiment(env, agent, rend = None, steps = None, delay = 0):
         if i % 100 == 0:
             print i
 
+def uniform_arr(*strings):
+    maxw = max(max(len(l) for l in string) for string in strings)
+    maxh = max(len(string.split('\n')) for string in strings)
+    rooms = []
+    for s in strings:
+        s = s.replace(' ', '0')
+        lines = s.split('\n')
+        m = [[int(z) for z in l + '1'*(maxw-len(l))] for l in lines]
+        m.extend([1]*maxw for _ in range(maxh-len(m)))
+        rooms.append(array(m).T)
+    return rooms
 
+def rooms_from_fpath(fpath):
+    with open(fpath) as f:
+        text = f.read()
+    strings = text.split('\n\n')
+    print '\n--------------\n'.join(strings)
+    rooms = uniform_arr(*strings)
+    return rooms

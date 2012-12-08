@@ -100,3 +100,18 @@ class StandardAgent(Agent):
         # add new observation
         prevs.append(obs)
         preva.append(a)
+
+class Option(object):
+    def choose_action(self, env, state):
+        pass
+    def can_initiate(self, env, state):
+        pass
+    def is_terminated(self, env, state):
+        pass
+
+class RandomAgent(Agent):
+    def choose_action(self, env, obs):
+        return array([choice(env.actions)])
+
+    def feedback(self, obs, action, reward, obs2): 
+        pass
