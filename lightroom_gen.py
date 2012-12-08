@@ -12,9 +12,9 @@ class LightroomGen():
     # generates a random room with dimensions between 4 and 50    
     def make_rand_room(self):
         self.has_key = random.randint(0, 1)
-        h_pad = random.randint(2, 9)
+        h_pad = random.randint(7, 9)
         print("h_pad: " + str(h_pad))
-        w_pad = random.randint(2, 9)
+        w_pad = random.randint(7, 9)
         print("w_pad: " + str(w_pad))
         
         #TODO Generalize to give random padding
@@ -107,7 +107,7 @@ class LightroomGen():
         room[door_x, door_y] = 5
         #for i in xrange(h):
         #    print(room[i])
-        room_arr = numpy.matrix(room)
+        room_arr = numpy.array(room)
         return (self.has_key, room_arr) 
 	            
     def make_spec_room_w_key(self, h, w, start_x, start_y, key_x, key_y, lock_x, lock_y, door_x, door_y):
