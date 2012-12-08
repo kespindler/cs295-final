@@ -11,7 +11,7 @@ def manhattan_dist(a,b):
 def expand_state(a):
     return [map(sum, zip(a,b)) for b in [(0, 1), (0, -1), (-1, 0), (1, 0)]]
     
-def best_first_graph_search(env, start, end, f):
+def best_first_graph_search(start, end, f):
     """Search the nodes with the lowest f scores first.
     You specify the function f(node) that you want to minimize; for example,
     if f is a heuristic estimate to the goal, then we have greedy best
@@ -20,7 +20,7 @@ def best_first_graph_search(env, start, end, f):
     values will be cached on the nodes as they are computed. So after doing
     a best first search you can examine the f values of the path returned."""
     node = Node(0, start, None)
-    if env.is_goal(node.state):
+    if node.state == end:
         return [node.state]
     frontier = []
     heapq.heappush(frontier, node)
@@ -28,7 +28,7 @@ def best_first_graph_search(env, start, end, f):
     end = None
     while frontier:
         node = heapq.heappop(frontier)
-        if env.is_goal(node.state):
+        if node.state = end:
             end = node
             break
         explored.add(node.state)
