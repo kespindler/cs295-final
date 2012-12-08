@@ -35,7 +35,6 @@ class Agent(object):
         self.stepCount = 0
         return totalsteps
     
-    
 
 class StandardAgent(Agent):
     """ Standard agent that learns with SARSA(lambda)
@@ -128,6 +127,7 @@ class StandardAgent(Agent):
         self.nextAction = None
         return super(StandardAgent,self).episode_finished()
 
+
 class Option(object):
     def choose_action(self, env, state):
         pass
@@ -136,6 +136,7 @@ class Option(object):
     def is_terminated(self, env, state):
         pass
 
+
 class RandomAgent(Agent):
     
     def choose_action(self, env, obs):
@@ -143,4 +144,7 @@ class RandomAgent(Agent):
         return array([choice(env.actions)])
 
     def feedback(self, obs, action, reward, obs2): 
+        pass
+
+    def episode_finished(self):
         pass
