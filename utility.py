@@ -35,12 +35,12 @@ def run_experiment(env, agent, rend = None, steps = None, delay = 0):
             print i
 
 def uniform_arr(*strings):
-    maxw = max(max(len(l) for l in string) for string in strings)
-    maxh = max(len(string.split('\n')) for string in strings)
+    maxh = max(max(len(l) for l in string) for string in strings)
+    maxw = max(len(string.split('\n')) for string in strings)
     rooms = []
     for s in strings:
         s = s.replace(' ', '0')
-        lines = s.split('\n')
+        lines = [s for s in s.split('\n')]
         m = [[int(z) for z in l + '1'*(maxw-len(l))] for l in lines]
         m.extend([1]*maxw for _ in range(maxh-len(m)))
         rooms.append(array(m).T)
@@ -48,8 +48,9 @@ def uniform_arr(*strings):
 
 def rooms_from_fpath(fpath):
     with open(fpath) as f:
-        text = f.read()
+        text = f.read().rstrip()
     strings = text.split('\n\n')
     print '\n--------------\n'.join(strings)
     rooms = uniform_arr(*strings)
+    print rooms
     return rooms
