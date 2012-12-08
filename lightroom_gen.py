@@ -3,15 +3,15 @@ import numpy
 from numpy.random import random_integers as rand
 
 class LightroomGen():
-    holder_var = 0
+    has_key = 0
     
     def __init__(self):
-        holder_var = 0
+        has_key = 0
 
 		 
     # generates a random room with dimensions between 4 and 50    
     def make_rand_room(self):
-        has_key = 1 #random.randint(0, 1)
+        self.has_key = random.randint(0, 1)
         
         #TODO Generalize to give random padding
         h = random.randint(6, 20)
@@ -76,18 +76,18 @@ class LightroomGen():
             door_x = random.randint(2, w-3)
         
         room[start_y, start_x] = 2
-        if(has_key):
-            while((key_y == start_y) and (key_x == start_x)):
-		        key_x = random.randint(2, w-3)
-		        key_y = random.randint(2, h-3)
+        if(self.has_key):
+            #while((key_y == start_y) and (key_x == start_x)):
+		    #    key_x = random.randint(2, w-3)
+		    #    key_y = random.randint(2, h-3)
             room[key_y, key_x] = 3
         room[lock_y, lock_x] = 4
         room[door_y, door_x] = 5
         #for i in xrange(h):
         #    print(room[i])
-        return numpy.array(room) 
-	
-            
+        room_arr = numpy.array(room)
+        return (self.has_key, room_arr) 
+	            
     def make_spec_room_w_key(self, h, w, start_x, start_y, key_x, key_y, lock_x, lock_y, door_x, door_y):
         print("h: " + str(h))
         print("w: " + str(w))
