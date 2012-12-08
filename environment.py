@@ -43,7 +43,7 @@ class Lightworld(Environment):
         roomarr = self.rooms[room]
         self.states = roomarr.copy()
         self.goal = filter_states(self.states, self.field.DOOR)[0]
-        self.initPos = filter_states(self, self.field.INIT)
+        self.initPos = filter_states(self.states, self.field.INIT)
         self.agent_holding_key = False
 
     def __init__(self, *rooms):
