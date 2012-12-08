@@ -49,7 +49,9 @@ class StandardAgent(Agent):
         """
         super(StandardAgent, self).__init__()
         self.stateDesc = stateDesc
+        self.stateNum = len(self.stateDesc)
         self.actionDesc = actionDesc
+        self.actionNum = len(self.actionDesc)
         self.qTable = zeros(stateDesc + actionDesc)
         self.alpha = alpha
         self.gamma = gamma
@@ -62,7 +64,8 @@ class StandardAgent(Agent):
     
     def choose_action(self, env, obs):
         super(StandardAgent, self).choose_action(env, obs)
-        obs = tuple(int(x) for x in obs)[0:len(self.stateDesc)]
+        # obs = tuple(int(x) for x in obs)[0:len(self.stateDesc)]
+        obs = obs[0:self.stateNum]
         i = self.nextAction
         if i == None:
             # Get subtable of actions at given state
@@ -89,10 +92,14 @@ class StandardAgent(Agent):
             self.nextAction = nexta
             nexta = tuple(nexta)
         
-        obs = tuple(int(x) for x in obs)[0:len(self.stateDesc)]
-        a = tuple(int(x) for x in a)[0:len(self.actionDesc)]
-        nextobs = tuple(int(x) for x in nextobs)[0:len(self.stateDesc)]
-        nexta = tuple(int(x) for x in nexta)[0:len(self.actionDesc)]
+        # obs = tuple(int(x) for x in obs)[0:len(self.stateDesc)]
+        # a = tuple(int(x) for x in a)[0:len(self.actionDesc)]
+        # nextobs = tuple(int(x) for x in nextobs)[0:len(self.stateDesc)]
+        # nexta = tuple(int(x) for x in nexta)[0:len(self.actionDesc)]
+        obs = obs[0:self.stateNum]
+        a = a[0:self.actionNum]
+        nextobs = nextobs[0:self.stateNum]
+        nexta = nexta[0:self.actionNum]
         
         sa = obs+a
         q = self.qTable[sa]
