@@ -1,8 +1,8 @@
-from numpy import array
-from search import best_first_graph_search, manhattan_dist
-from environment import Lightworld
 
 def test_bfs():
+    from numpy import array
+    from search import best_first_graph_search, manhattan_dist
+    from environment import Lightworld
     maze_string2 = """\
     111111111
     1  1    1
@@ -29,3 +29,14 @@ def test_bfs():
         return [s for s in next_states if structure[s] != Lightworld.field.WALL]
 
     print best_first_graph_search((1,1), (w-2, h-2), manhattan_dist, expand_state)
+
+def test_new_env():
+    from agent import RandomAgent
+    from utility import rooms_from_fpath, run_experiment
+    from pygamerenderer import PygameRenderer
+    from environment import Lightworld
+    lightworld = Lightworld(*rooms_from_fpath('basic_lightworld.txt'))
+    agent = RandomAgent()
+    rend = PygameRenderer(lightworld, agent)
+    run_experiment(lightworld, agent, rend)
+

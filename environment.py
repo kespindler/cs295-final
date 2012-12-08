@@ -71,6 +71,9 @@ class Lightworld(Environment):
         state = State(r,x,y,h,l,*rgbs)
         return state
 
+    def new_state(self):
+        return choice(filter_states(self.states, self.field.INIT))
+
     def perform_action(self, state, action):
         pos2 = (state.x, state.y)
         a = self.actions

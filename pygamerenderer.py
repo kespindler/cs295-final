@@ -2,9 +2,6 @@ import pygame
 from abc import ABCMeta, abstractmethod
 from pygame.locals import *
 from os import path
-from environment import Maze
-field = Maze.field
-
 
 class RenderEngine(object):
     __metaclass__ = ABCMeta
