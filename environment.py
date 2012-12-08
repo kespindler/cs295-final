@@ -58,6 +58,13 @@ class Lightworld(Environment):
         return (self.room == len(self.rooms) - 1 and
                 (state.x, state.y) == self.goal)
 
+    def dimensions(self):
+        r = len(self.rooms)
+        x,y = self.rooms[0].shape
+        h,l = 2
+        rgbs = [21]*12
+        return tuple([r,x,y,h,l]+rgbs)
+    
     def calculate_state(self, pos):
         r = self.room
         x,y = pos
@@ -69,7 +76,8 @@ class Lightworld(Environment):
             # door, key, lock in rgb order
             for field in [self.field.DOOR, self.field.KEY, self.field.LOCK]:
                 fields = filter_states(self.states, field)
-                rgbs.append(0 if not fields else manhattan_dist(pos, fields[0]))
+                rgbs.append(0 if not fields else 
+                        max(0, 1. - manhattan_dist(pos, fields[0])/20.))
         state = State(r,x,y,h,l,*rgbs)
         return state
 
