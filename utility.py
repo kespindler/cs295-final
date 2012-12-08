@@ -1,4 +1,5 @@
 from time import sleep
+from environment import Lightworld
 
 def enum(*sequential,**named):
     enums = dict(zip(sequential, range(len(sequential))),**named)
@@ -36,6 +37,17 @@ def run_experiment(env, agent, rend = None, steps = None, delay = 0):
         if i % 100 == 0:
             print i
 
+def uniform_arr(*strings):
+    maxw = max(max(len(l) for l in string) for string in strings)
+    maxh = max(len(string.split('\n')) for string in strings)
+    r = []
+    for s in strings:
+        s = s.replace(' ', '0')
+        lines = s.split('\n')
+        m = [[int(z) for z in l + '1'*(maxw-len(l))] for l in lines]
+        m.extend([1]*maxw for _ in range(maxh-len(m)))
+        r.append(array(m).T)
+    return r
 
 def lightworld_from_fpath(fpath):
     with open(fpath) as f:

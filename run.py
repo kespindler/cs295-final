@@ -1,17 +1,4 @@
 from numpy import array
-import pygame
-
-def uniform_arr(*strings):
-    maxw = max(max(len(l) for l in string) for string in strings)
-    maxh = max(len(string.split('\n')) for string in strings)
-    r = []
-    for s in strings:
-        s = s.replace(' ', '0')
-        lines = s.split('\n')
-        m = [[int(z) for z in l + '1'*(maxw-len(l))] for l in lines]
-        m.extend([1]*maxw for _ in range(maxh-len(m)))
-        r.append(array(m).T)
-    return r
 
 lr = lrg.LightroomGen()
 room1 = lr.make_rand_room()
