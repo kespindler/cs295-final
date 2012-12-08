@@ -12,30 +12,39 @@ class LightroomGen():
     # generates a random room with dimensions between 4 and 50    
     def make_rand_room(self):
         self.has_key = random.randint(0, 1)
+        h_pad = random.randint(2, 9)
+        print("h_pad: " + str(h_pad))
+        w_pad = random.randint(2, 9)
+        print("w_pad: " + str(w_pad))
         
         #TODO Generalize to give random padding
         h = random.randint(6, 20)
         w = random.randint(6, 20)
+        
         #print("h: " + str(h))
         #print("w: " + str(w))
-        shape = (h, w)
+        shape = (20, 20)
         # initialize room array
         room = numpy.zeros(shape, dtype=int)
         # build edge walls
-        room[0, :] = room[-1, :] = 1
-        room[:, 0] = room[:, -1] = 1
-        room[1, :] = room[-2, :] = 1
-        room[:, 1] = room[:, -2] = 1
+        for i in range(0, h_pad):
+            room[:, i] = room[:, -(i+1)] = 1
+        for i in range(0, w_pad):
+            room[i, :] = room[-(i+1), :] = 1 
+        #room[0, :] = room[-1, :] = 1
+        #room[:, 0] = room[:, -1] = 1
+        #room[1, :] = room[-2, :] = 1
+        #room[:, 1] = room[:, -2] = 1
              
         # Generate the agent's start position
-        start_x = random.randint(2, w-3)
-        start_y = random.randint(2, h-3)
+        start_x = random.randint(w_pad, 20-w_pad-1)
+        start_y = random.randint(h_pad, 20-h_pad-1)
         #print("start_x: " + str(start_x))
         #print("start_y: " + str(start_y))
         
         # Generate the key's position
-        key_x = random.randint(2, w-3)
-        key_y = random.randint(2, h-3)
+        key_x = random.randint(w_pad, 20-w_pad-1)
+        key_y = random.randint(h_pad, 20-h_pad-1)
         
         # Generate the lock's position
         # The lock will always appear on a wall
@@ -45,16 +54,16 @@ class LightroomGen():
         lock_y = 0
         if(on_side_wall):
             if(which_wall):
-                lock_x = w-2
+                lock_x = 20-w_pad-1
             else:
-                lock_x = 1
-            lock_y = random.randint(2, h-3)
+                lock_x = w_pad-1
+            lock_y = random.randint(h_pad, 20-h_pad-1)
         else:
             if(which_wall):
-                lock_y = h-2
+                lock_y = 20-h_pad-1
             else:
-                lock_y = 1
-            lock_x = random.randint(2, w-3)
+                lock_y = h_pad-1
+            lock_x = random.randint(w_pad, 20-w_pad-1)
         
         # Generate the door's position
         # The lock will always appear on a wall
@@ -64,16 +73,16 @@ class LightroomGen():
         door_y = 0
         if(on_side_wall):
             if(which_wall):
-                door_x = w-2
+                door_x = 20-w_pad-1
             else:
-                door_x = 1
-            door_y = random.randint(2, h-3)
+                door_x = w_pad-1
+            door_y = random.randint(h_pad, 20-h_pad-1)
         else:
             if(which_wall):
-                door_y = h-2
+                door_y = 20-h_pad-1
             else:
-                door_y = 1
-            door_x = random.randint(2, w-3)
+                door_y = h_pad-1
+            door_x = random.randint(w_pad, 20-w_pad-1)
         
         room[start_y, start_x] = 2
         if(self.has_key):
