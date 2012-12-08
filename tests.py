@@ -4,15 +4,15 @@ def test_bfs():
     from search import best_first_graph_search, manhattan_dist
     from environment import Lightworld
     maze_string2 = """\
-    111111111
-    1  1    1
-    1  1  1 1
-    1  1  1 1
-    1  1 11 1
-    1     1 1
-    1111111 1
-    1       1
-    111111111"""
+111111111
+1  1    1
+1  1  1 1
+1  1  1 1
+1  1 11 1
+1     1 1
+1111111 1
+1       1
+111111111"""
 
     def arr_from_str(string):
         return array([[1 if z=='1' else 0 for z in l] for l in 
