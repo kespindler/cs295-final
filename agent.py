@@ -29,7 +29,6 @@ class Agent(object):
         """
         return # no return value
     
-    
 
 class StandardAgent(Agent):
     """ Standard agent that learns with SARSA(lambda)
@@ -133,4 +132,7 @@ class RandomAgent(Agent):
         return array([choice(env.actions)])
 
     def feedback(self, obs, action, reward, obs2): 
+        pass
+
+    def episode_finished(self):
         pass
