@@ -119,6 +119,7 @@ class StandardAgent(Agent):
         self.observations = [[], []]
         self.nextAction = None
 
+
 class Option(object):
     def choose_action(self, env, state):
         pass
@@ -126,6 +127,7 @@ class Option(object):
         pass
     def is_terminated(self, env, state):
         pass
+
 
 class RandomAgent(Agent):
     def choose_action(self, env, obs):
