@@ -35,6 +35,7 @@ class Agent(object):
         self.stepCount = 0
         return totalsteps
     
+    
 
 class StandardAgent(Agent):
     """ Standard agent that learns with SARSA(lambda)
@@ -61,6 +62,7 @@ class StandardAgent(Agent):
     
     def choose_action(self, env, obs):
         super(StandardAgent, self).choose_action(env, obs)
+        obs = tuple(int(x) for x in obs)[0:len(self.stateDesc)]
         i = self.nextAction
         if i == None:
             # Get subtable of actions at given state
@@ -70,10 +72,10 @@ class StandardAgent(Agent):
             if random() > self.epsilon:
                 # Greedily choose max; if tie, break randomly
                 i = where(availableActions == availableActions.max())
-                i = choice(zip(*i))
+                i = array(choice(zip(*i)))
             else:
                 # totally random
-                i = tuple(randint(0, x-1) for x in self.actionDesc)
+                i = array(tuple(randint(0, x-1) for x in self.actionDesc))
         
         self.nextAction = None
         return i
@@ -83,8 +85,14 @@ class StandardAgent(Agent):
         """
         # if no next action is given choose one using policy
         if nexta == None:
-            nexta = self.choose_action(nextobs)
+            nexta = self.choose_action(None, nextobs)
             self.nextAction = nexta
+            nexta = tuple(nexta)
+        
+        obs = tuple(int(x) for x in obs)[0:len(self.stateDesc)]
+        a = tuple(int(x) for x in a)[0:len(self.actionDesc)]
+        nextobs = tuple(int(x) for x in nextobs)[0:len(self.stateDesc)]
+        nexta = tuple(int(x) for x in nexta)[0:len(self.actionDesc)]
         
         sa = obs+a
         q = self.qTable[sa]
@@ -127,7 +135,6 @@ class StandardAgent(Agent):
         self.nextAction = None
         return super(StandardAgent,self).episode_finished()
 
-
 class Option(object):
     def choose_action(self, env, state):
         pass
@@ -136,7 +143,6 @@ class Option(object):
     def is_terminated(self, env, state):
         pass
 
-
 class RandomAgent(Agent):
     
     def choose_action(self, env, obs):
@@ -144,7 +150,4 @@ class RandomAgent(Agent):
         return array([choice(env.actions)])
 
     def feedback(self, obs, action, reward, obs2): 
-        pass
-
-    def episode_finished(self):
         pass
