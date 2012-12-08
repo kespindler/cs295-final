@@ -61,7 +61,7 @@ class Lightworld(Environment):
     def dimensions(self):
         r = len(self.rooms)
         x,y = self.rooms[0].shape
-        h,l = 2
+        h,l = 2,2
         rgbs = [21]*12
         return tuple([r,x,y,h,l]+rgbs)
     
