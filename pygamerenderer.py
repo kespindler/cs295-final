@@ -2,6 +2,8 @@ import pygame
 from abc import ABCMeta, abstractmethod
 from pygame.locals import *
 from os import path
+from environment import Lightworld
+field = Lightworld.field
 
 class RenderEngine(object):
     __metaclass__ = ABCMeta
@@ -64,10 +66,10 @@ class PygameRenderer(RenderEngine):
                       (rect[0], rect[1] + rect[3]-1),
                       (rect[0], rect[1])]
         state = i * self.maze.states.shape[1] + j
-        action_vals = self.agent.pyb_agent.learner.module.getActionValues(state)
-        for k, val in enumerate(action_vals): #4 directions, and their order is N E S W
-            color = tuple([max(0, int(val/max_val*0xff))]*3)
-            pygame.draw.polygon(self.screen, color, [point_list[k], center, point_list[(k+1)%4]])
+        #action_vals = self.agent.learner.module.getActionValues(state)
+        #for k, val in enumerate(action_vals): #4 directions, and their order is N E S W
+        #    color = tuple([max(0, int(val/max_val*0xff))]*3)
+        #    pygame.draw.polygon(self.screen, color, [point_list[k], center, point_list[(k+1)%4]])
 
     def fill_grid(self):
         if self.agent is not None:

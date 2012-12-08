@@ -11,12 +11,9 @@ def enum(*sequential,**named):
 def run_experiment(env, agent, rend = None, steps = None, delay = 0):
     i = 0
     def run_interaction(state, render=False):
-        obs = env.observation(state)
-        action = agent.choose_action(env, obs)
-        #observation, reward for a pomdp
+        action = agent.choose_action(env, state)
         state2, reward = env.perform_action(state, action)
-        obs2 = env.observation(state)
-        agent.feedback(obs, action, reward, obs2)
+        agent.feedback(state, action, reward, state2)
         if render and rend is not None:
             rend.update(state2)
         return state2

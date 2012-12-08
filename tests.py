@@ -37,6 +37,6 @@ def test_new_env():
     from environment import Lightworld
     lightworld = Lightworld(*rooms_from_fpath('basic_lightworld.txt'))
     agent = RandomAgent()
-    rend = PygameRenderer(lightworld, agent)
+    rend = PygameRenderer(lightworld)
     run_experiment(lightworld, agent, rend)
 

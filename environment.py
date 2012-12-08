@@ -24,7 +24,8 @@ class Environment(object):
         return False
 
 
-State = namedtuple('State', 'rxyhl'.split() + [''.join(x) for x in product('nsew', 'rgb')])
+State = namedtuple('State', [c for c in 'rxyhl'] + 
+        [''.join(x) for x in product('nsew', 'rgb')])
 
 class Lightworld(Environment):
     # NSEW is north south east west
@@ -72,9 +73,12 @@ class Lightworld(Environment):
         return state
 
     def new_state(self):
-        return choice(filter_states(self.states, self.field.INIT))
+        pos = choice(filter_states(self.states, self.field.INIT))
+        return self.calculate_state(pos)
 
     def perform_action(self, state, action):
+        assert action.shape == (1,)
+        action = action[0] # in this case action i s 
         pos2 = (state.x, state.y)
         a = self.actions
         reward = self.step_reward
@@ -90,14 +94,14 @@ class Lightworld(Environment):
                 else:
                     reward = self.final_reward
         elif action == a.G:
-            if self.states[pos] == self.field.KEY:
+            if self.states[pos2] == self.field.KEY:
                 self.agent_holding_key = True
-                self.states[pos] = self.field.EMPTY
+                self.states[pos2] = self.field.EMPTY
                 reward = self.task_reward
         elif action == a.P:
-            if self.states[pos] == self.field.LOCK:
+            if self.states[pos2] == self.field.LOCK:
                 if not filter_states(self.states, self.field.KEY):
                     self.agent_holding_key = False
                 self.states[self.states == self.field.DOOR] = self.field.EMPTY
                 reward = self.task_reward
-        return self.calculate_state(pos2, reward)
+        return (self.calculate_state(pos2), reward)
