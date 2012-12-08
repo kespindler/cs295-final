@@ -8,10 +8,8 @@ def manhattan_dist(a,b):
     bx,by = b
     return abs(by-ay) + abs(bx-ax)
 
-def expand_state(a):
-    return [map(sum, zip(a,b)) for b in [(0, 1), (0, -1), (-1, 0), (1, 0)]]
     
-def best_first_graph_search(start, end, f):
+def best_first_graph_search(start, end, f, expand_state):
     """Search the nodes with the lowest f scores first.
     You specify the function f(node) that you want to minimize; for example,
     if f is a heuristic estimate to the goal, then we have greedy best
@@ -25,15 +23,15 @@ def best_first_graph_search(start, end, f):
     frontier = []
     heapq.heappush(frontier, node)
     explored = set() #states, not nodes, go in this set
-    end = None
+    solved = False
     while frontier:
         node = heapq.heappop(frontier)
-        if node.state = end:
-            end = node
+        if node.state == end:
+            solved = True
             break
         explored.add(node.state)
         for s in expand_state(node.state):
-            child = Node(node.priority + 1, s, node.state)
+            child = Node(node.priority + 1, s, node)
             if child.state not in explored:# their implementation also had: `and child not in frontier:`
                 frontier.append(child)
             #elif child in frontier:
@@ -41,7 +39,7 @@ def best_first_graph_search(start, end, f):
             #    if f(child) < f(incumbent):
             #        del frontier[incumbent]
             #        frontier.append(child)
-    if end is None:
+    if not solved:
         return None
     result = []
     while node:
