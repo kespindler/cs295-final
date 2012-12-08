@@ -88,8 +88,8 @@ class Lightworld(Environment):
             if self.forbidden_pos(pos2):
                 pos2 = (state.x,state.y)
             if pos2 == self.goal:
-                state = State(*[0]*17)._replace(x=pos2[0], y=pos2[1])
-                if not self.episode_finished(State(x=pos2[0], y=pos2[1])):
+                state = State(*[0]*18)._replace(x=pos2[0], y=pos2[1])
+                if not self.episode_finished(state):
                     self.set_room(self.room + 1)
                 else:
                     reward = self.final_reward
