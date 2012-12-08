@@ -37,3 +37,10 @@ def run_experiment(env, agent, rend = None, steps = None, delay = 0):
             print i
 
 
+def lightworld_from_fpath(fpath):
+    with open(fpath) as f:
+        text = f.read()
+    strings = text.split('\n\n')
+    print strings
+    rooms = uniform_arr(*strings)
+    return Lightworld(*rooms)
