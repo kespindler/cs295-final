@@ -100,6 +100,7 @@ class Lightworld(Environment):
                 state = State(*[0]*17)._replace(x=pos2[0], y=pos2[1])
                 if not self.episode_finished(state):
                     self.set_room(self.room + 1)
+                    reward = self.task_reward
                 else:
                     reward = self.final_reward
         elif action == a.G:
@@ -108,9 +109,9 @@ class Lightworld(Environment):
                 self.states[pos2] = self.field.EMPTY
                 reward = self.task_reward
         elif action == a.P:
-            if self.states[pos2] == self.field.LOCK:
-                if not filter_states(self.states, self.field.KEY):
-                    self.agent_holding_key = False
+            if (self.states[pos2] == self.field.LOCK and
+                    not filter_states(self.states, self.field.KEY)):
+                self.agent_holding_key = False
                 self.states[self.states == self.field.DOOR] = self.field.EMPTY
                 reward = self.task_reward
         return (self.calculate_state(pos2), reward)
