@@ -42,31 +42,34 @@ class StandardAgent(Agent):
         self.traceThreshold = 0.0001
         # observations stores history of SARSA feedback
         self.observations = [[], []]
+        self.nextAction = None # ensures proper SARSA updates
     
     def choose_action(self, env, obs):
-        # Get subtable of actions at given state
-        availableActions = self.qTable[obs]
+        i = self.nextAction
+        if i == None:
+            # Get subtable of actions at given state
+            availableActions = self.qTable[obs]
         
-        # Choose randomly or greedily?
-        i = None
-        if random() > self.epsilon:
-            # greedy
-            #Choose max; if tie, choose randomly
-            i = argmax(availableActions)
-            i = choice(unravel_index(i, self.actionDesc))
-        else:
-            # random
-            i = tuple(randint(0, x-1) for x in self.actionDesc)
-            
+            # Choose randomly or greedily?
+            if random() > self.epsilon:
+                # greedy
+                #Choose max; if tie, choose randomly
+                i = argmax(availableActions)
+                i = choice(unravel_index(i, self.actionDesc))
+            else:
+                # random
+                i = tuple(randint(0, x-1) for x in self.actionDesc)
+        
+        self.nextAction = None
         return i
     
     def feedback(self, obs, a, r, nextobs, nexta = None):
         """ Straightforward implementation of SARSALambda, maybe better if moved into subclass?
         """
-        # if no next action is given choose 
-        # bug - b/c of egreedy, might not actually be the next action chosen!
+        # if no next action is given choose one using policy
         if nexta == None:
             nexta = self.choose_action(nextobs)
+            self.nextAction = nexta
         
         q = self.qTable[obs+a]
         qnext = self.qTable[nextobs+nexta]
