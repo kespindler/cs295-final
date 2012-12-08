@@ -29,3 +29,5 @@ def gen_world():
             print("Room " + str(i) + " contains a key:")
         print(room)
     return list_of_rooms
+   
+#gen_world()
