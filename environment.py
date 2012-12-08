@@ -25,7 +25,7 @@ class Environment(object):
 
 State = namedtuple('State', 'rxyhl'.split() + [''.join(x) for x in product('nsew', 'rgb')])
 
-class Lightworld(Maze):
+class Lightworld(Environment):
     # NSEW is north south east west
     # G is grab to grab a key
     # P is press lock
