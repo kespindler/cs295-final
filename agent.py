@@ -22,11 +22,20 @@ class Agent(object):
             obs and a are tuples, r is a float
         """
         return # no return value
+    
+    @abstractmethod
+    def episode_finished(self):
+        """ Resets the agent on end of an episode
+        """
+        return # no return value
+    
+    
 
 class StandardAgent(Agent):
     """ Standard agent that learns with SARSA(lambda)
     """
-    def __init__(self, stateDesc, actionDesc, alpha = 0.1, gamma = 0.99, slambda = 0.9, epsilon = 0.01, traceThreshold = 0.0001):
+    def __init__(self, stateDesc, actionDesc, 
+                    alpha = 0.1, gamma = 0.99, slambda = 0.9, epsilon = 0.01, traceThreshold = 0.0001):
         """ stateDesc gives size of state space (if state space is d-dim, stateDesc is tuple of length d)
             actionDesc gives size of actions space (sized similarly to stateDesc)
             learner is learning algorithm?
@@ -71,13 +80,14 @@ class StandardAgent(Agent):
             nexta = self.choose_action(nextobs)
             self.nextAction = nexta
         
-        q = self.qTable[obs+a]
+        sa = obs+a
+        q = self.qTable[sa]
         qnext = self.qTable[nextobs+nexta]
         
         # update current qvalue for s,a in table
         delta = r + self.gamma * qnext - q
         newq = q + self.alpha * delta
-        self.qTable[obs+a] = newq
+        self.qTable[sa] = newq
         
         # compute backup
         prevs = self.observations[0]
@@ -92,8 +102,8 @@ class StandardAgent(Agent):
             action = preva[i]
             
             sa = state + action
-            newq = self.qTable(sa) + self.alpha * delta * eligibility
-            self.qTable(sa) = newq
+            newq = self.qTable[sa] + self.alpha * delta * eligibility
+            self.qTable[sa] = newq
             
             # decay trace, and terminate if trace is negligible
             eligibility *= self.slambda
@@ -103,6 +113,12 @@ class StandardAgent(Agent):
         # add new observation
         prevs.append(obs)
         preva.append(a)
+    
+    def episode_finished(self):
+        """ Erase history, but keep qvalues!
+        """
+        self.observations = [[], []]
+        self.nextAction = None
 
 class Option(object):
     def choose_action(self, env, state):
