@@ -40,3 +40,5 @@ def test_new_env():
     rend = PygameRenderer(lightworld)
     run_experiment(lightworld, agent, rend)
 
+if __name__ == "__main__":
+    test_new_env()
