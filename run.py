@@ -5,8 +5,11 @@ from agent import RandomAgent
 from pygamerenderer import PygameRenderer
 from utility import run_experiment
 
-env = Lightworld(*[room for iskey, room in gen_world()])
-agent = RandomAgent()
+rooms = gen_world()
+env = Lightworld(*[room for iskey, room in rooms])
+stateDesc = env.dimensions[0:5]
+actionDesc = (6,)
+agent = StandardAgent(stateDesc, actionDesc)
 rend = PygameRenderer(env)
 
 run_experiment(env, agent, rend)
