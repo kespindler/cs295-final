@@ -85,7 +85,7 @@ class LightroomGen():
         room[door_y, door_x] = 5
         #for i in xrange(h):
         #    print(room[i])
-        room_arr = numpy.array(room)
+        room_arr = numpy.matrix(room)
         return (self.has_key, room_arr) 
 	            
     def make_spec_room_w_key(self, h, w, start_x, start_y, key_x, key_y, lock_x, lock_y, door_x, door_y):
