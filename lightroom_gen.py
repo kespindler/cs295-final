@@ -99,9 +99,9 @@ class LightroomGen():
             
         room[start_x, start_y] = 2
         if(self.has_key):
-            #while((key_y == start_y) and (key_x == start_x)):
-		    #    key_x = random.randint(2, w-3)
-		    #    key_y = random.randint(2, h-3)
+            while((key_y == start_y) and (key_x == start_x)):
+                key_x = random.randint(w_pad, 20-w_pad-1)
+                key_y = random.randint(h_pad, 20-h_pad-1)
             room[key_x, key_y] = 3
         room[lock_x, lock_y] = 4
         room[door_x, door_y] = 5
