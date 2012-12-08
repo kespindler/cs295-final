@@ -1,9 +1,12 @@
 from abc import ABCMeta, abstractmethod
 from random import random, choice, randint
-from numpy import array, zeros, ones, append, argmax, unravel_index
+from numpy import array, zeros, ones, append, argmax, unravel_index, where
 
 class Agent(object):
     __metaclass__ = ABCMeta
+    
+    def __init__(self):
+        self.stepCount = 0
     
     @abstractmethod
     def choose_action(self, env, obs):
@@ -13,6 +16,7 @@ class Agent(object):
             obs is a tuple
             :return: action
         """
+        self.stepCount += 1
         return None
     
     @abstractmethod
@@ -23,11 +27,13 @@ class Agent(object):
         """
         return # no return value
     
-    @abstractmethod
     def episode_finished(self):
         """ Resets the agent on end of an episode
+            Returns step count
         """
-        return # no return value
+        totalsteps = self.stepCount
+        self.stepCount = 0
+        return totalsteps
     
 
 class StandardAgent(Agent):
@@ -40,6 +46,7 @@ class StandardAgent(Agent):
             learner is learning algorithm?
             epsilon is for epsilon exploration
         """
+        super(StandardAgent, self).__init__()
         self.stateDesc = stateDesc
         self.actionDesc = actionDesc
         self.qTable = zeros(stateDesc + actionDesc)
@@ -53,6 +60,7 @@ class StandardAgent(Agent):
         self.nextAction = None # ensures proper SARSA updates
     
     def choose_action(self, env, obs):
+        super(StandardAgent, self).choose_action(env, obs)
         i = self.nextAction
         if i == None:
             # Get subtable of actions at given state
@@ -60,12 +68,11 @@ class StandardAgent(Agent):
         
             # Choose randomly or greedily?
             if random() > self.epsilon:
-                # greedy
-                #Choose max; if tie, choose randomly
-                i = argmax(availableActions)
-                i = choice(unravel_index(i, self.actionDesc))
+                # Greedily choose max; if tie, break randomly
+                i = where(availableActions == availableActions.max())
+                i = choice(zip(*i))
             else:
-                # random
+                # totally random
                 i = tuple(randint(0, x-1) for x in self.actionDesc)
         
         self.nextAction = None
@@ -118,6 +125,7 @@ class StandardAgent(Agent):
         """
         self.observations = [[], []]
         self.nextAction = None
+        return super(StandardAgent,self).episode_finished()
 
 
 class Option(object):
@@ -130,7 +138,9 @@ class Option(object):
 
 
 class RandomAgent(Agent):
+    
     def choose_action(self, env, obs):
+        super(RandomAgent, self).choose_action(env, obs)
         return array([choice(env.actions)])
 
     def feedback(self, obs, action, reward, obs2): 
