@@ -18,8 +18,8 @@ class LightroomGen():
         print("w_pad: " + str(w_pad))
         
         #TODO Generalize to give random padding
-        h = random.randint(6, 20)
-        w = random.randint(6, 20)
+        #h = random.randint(6, 20)
+        #w = random.randint(6, 20)
         
         #print("h: " + str(h))
         #print("w: " + str(w))
@@ -54,13 +54,13 @@ class LightroomGen():
         lock_y = 0
         if(on_side_wall):
             if(which_wall):
-                lock_x = 20-w_pad-1
+                lock_x = 20-w_pad
             else:
                 lock_x = w_pad-1
             lock_y = random.randint(h_pad, 20-h_pad-1)
         else:
             if(which_wall):
-                lock_y = 20-h_pad-1
+                lock_y = 20-h_pad
             else:
                 lock_y = h_pad-1
             lock_x = random.randint(w_pad, 20-w_pad-1)
@@ -73,25 +73,38 @@ class LightroomGen():
         door_y = 0
         if(on_side_wall):
             if(which_wall):
-                door_x = 20-w_pad-1
+                door_x = 20-w_pad
             else:
                 door_x = w_pad-1
             door_y = random.randint(h_pad, 20-h_pad-1)
         else:
             if(which_wall):
-                door_y = 20-h_pad-1
+                door_y = 20-h_pad
             else:
                 door_y = h_pad-1
             door_x = random.randint(w_pad, 20-w_pad-1)
-        
-        room[start_y, start_x] = 2
+        while((door_y == lock_y) and (door_x == lock_x)):
+            if(on_side_wall):
+                if(which_wall):
+                    door_x = 20-w_pad
+                else:
+                    door_x = w_pad-1
+                door_y = random.randint(h_pad, 20-h_pad-1)
+            else:
+                if(which_wall):
+                    door_y = 20-h_pad
+                else:
+                    door_y = h_pad-1
+                door_x = random.randint(w_pad, 20-w_pad-1)
+            
+        room[start_x, start_y] = 2
         if(self.has_key):
             #while((key_y == start_y) and (key_x == start_x)):
 		    #    key_x = random.randint(2, w-3)
 		    #    key_y = random.randint(2, h-3)
-            room[key_y, key_x] = 3
-        room[lock_y, lock_x] = 4
-        room[door_y, door_x] = 5
+            room[key_x, key_y] = 3
+        room[lock_x, lock_y] = 4
+        room[door_x, door_y] = 5
         #for i in xrange(h):
         #    print(room[i])
         room_arr = numpy.matrix(room)
