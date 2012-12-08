@@ -1,17 +1,12 @@
 from numpy import array
+from environment import Lightworld
+from lightworld_gen import gen_world
+from agent import RandomAgent
+from pygamerenderer import PygameRenderer
+from utility import run_experiment
 
-lr = lrg.LightroomGen()
-room1 = lr.make_rand_room()
-room2 = lr.make_rand_room()
-room3 = lr.make_rand_room()
-
-env = Lightroom(room1, room2, room3)
-#agent = OptionAgent2()
+env = Lightworld(*[room for iskey, room in gen_world()])
 agent = RandomAgent()
-#agent = BridgeAgent(LearningAgent, ActionValueTable, SARSA, 56, 6)
-# The first array should be the observation space of the environment...
-# We should be able to calculate this.
-#agent = BridgeAgent(LearningAgent, ActionValueTable, SARSA, [56, 6, 12], [0.1, 0.99])
-rend = LightroomRenderer(env)
+rend = PygameRenderer(env)
 
 run_experiment(env, agent, rend)
