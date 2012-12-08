@@ -103,11 +103,5 @@ class PygameRenderer(RenderEngine):
     def update(self, state):
         self.screen.convert()
         self.fill_grid()
-        #another hack to make the bridge work.fix that.
-        def obs2state(obs):
-            ydim = self.maze.states.shape[1]
-            return (int(obs[0]/ydim),obs[0]%ydim)
-        #check and fix if state is actually an obs and not a state
-        state = state if type(state) == type(()) else obs2state(state)
-        self.screen.blit(self.person_img, img_point(*state))
+        self.screen.blit(self.person_img, img_point(state.x, state.y))
         pygame.display.update()
