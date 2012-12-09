@@ -1,13 +1,15 @@
 from abc import ABCMeta, abstractmethod
 from numpy import where, array
 from random import choice
-from utility import enum
+from utility import enum, filter_states, Bidict
 from collections import namedtuple
 from search import manhattan_dist
 from itertools import product
 
-def filter_states(states, field):
-    return zip(*where(states == field))
+def expand_state(states, a):
+    next_states = [tuple(map(sum, zip(a,b))) for b in 
+            Lightworld.movemap.values()]
+    return [s for s in next_states if states[s] != Lightworld.field.WALL]
 
 class Environment(object):
     __metaclass__ = ABCMeta
@@ -20,12 +22,10 @@ class Environment(object):
     def new_state(self):
         return None # state
 
-    def is_finished(self, state):
-        return False
-
 
 State = namedtuple('State', [c for c in 'rxyhl'] + 
         [''.join(x) for x in product('nsew', 'rgb')])
+
 
 class Lightworld(Environment):
     # NSEW is north south east west
@@ -33,6 +33,10 @@ class Lightworld(Environment):
     # P is press lock
     field = enum(EMPTY=0,WALL=1,INIT=2,KEY=3,LOCK=4,DOOR=5)
     actions = enum(N=0,S=1,E=2,W=3,G=4,P=5)
+    movemap = Bidict({actions.N:(0, -1),
+        actions.S:(0, 1),
+        actions.E:(1, 0),
+        actions.W:(-1, 0)})
     step_reward = -1
     final_reward = 1000
     task_reward = 1
@@ -71,7 +75,7 @@ class Lightworld(Environment):
         h = 1 if self.agent_holding_key else 0
         l = 1 if filter_states(self.states, self.field.DOOR) else 0
         rgbs = []
-        for dir in [(0,-1), (0,1), (1,0), (-1,0)]:
+        for dir in Lightworld.movemap.values():
             pos2 = tuple(map(sum, zip(pos, dir)))
             # door, key, lock in rgb order
             for field in [self.field.DOOR, self.field.KEY, self.field.LOCK]:
@@ -95,7 +99,7 @@ class Lightworld(Environment):
         a = self.actions
         reward = self.step_reward
         if action in [a.N, a.S, a.E, a.W]:
-            delta = {a.N:(0,-1), a.S:(0,1), a.E:(1,0), a.W:(-1,0)}[action]
+            delta = self.movemap[action]
             pos2 = tuple(map(sum,zip(pos2, delta)))
             if self.forbidden_pos(pos2):
                 pos2 = (state.x,state.y)

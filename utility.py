@@ -1,5 +1,8 @@
 from time import sleep
-from numpy import array
+from numpy import array, where
+
+def filter_states(states, field):
+    return zip(*where(states == field))
 
 def enum(*sequential,**named):
     enums = dict(zip(sequential, range(len(sequential))),**named)
@@ -27,7 +30,7 @@ def run_experiment(env, agent, rend = None, steps = None, delay = 0):
                 steps -= 1
 
         current_state = run_interaction(current_state, True)
-        if env.is_finished(current_state):
+        if env.episode_finished(current_state):
             agent.episode_finished()
             env.restart_episode()
             current_state = env.new_state()
@@ -59,3 +62,14 @@ def rooms_from_fpath(fpath):
     rooms = uniform_arr(*strings)
     print rooms
     return rooms
+
+class Bidict(dict):
+    def __init__(self, d):
+        for k,v in d.items():
+            self[k] = v
+        self.reverse = {v:k for k,v in d.items()}
+    
+    def __getitem__(self, key):
+        if key in self:
+            return dict.__getitem__(self, key)
+        return self.reverse[key]
