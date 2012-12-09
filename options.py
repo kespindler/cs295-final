@@ -80,6 +80,7 @@ class OptionsAgent(StandardAgent):
         # get action
         return self.currentOption.choose_action(env, obs)
     
+    # TODO I think this needs to be taken out...
     def shapeReward(self, obs, r, nextobs):
         """ Shape reward based on current option
         """
