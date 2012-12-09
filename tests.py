@@ -2,7 +2,7 @@
 def test_bfs():
     from numpy import array
     from search import best_first_graph_search, manhattan_dist
-    from environment import Lightworld
+    from environment import Lightworld, expand_state
     maze_string2 = """\
 111111111
 1  1    1
@@ -23,12 +23,11 @@ def test_bfs():
     w = len(structure)
     print structure
 
-    def expand_state(a):
-        next_states = [tuple(map(sum, zip(a,b))) for b in 
-                [(0, 1), (0, -1), (-1, 0), (1, 0)]]
-        return [s for s in next_states if structure[s] != Lightworld.field.WALL]
+    goal = (w-2, h-2)
+    expand_state_partial = lambda s: expand_state(structure, s)
+    manhattan_dist_partial = lambda s: manhattan_dist(s, goal)
+    print best_first_graph_search((1,1), goal, manhattan_dist_partial, expand_state_partial)
 
-    print best_first_graph_search((1,1), (w-2, h-2), manhattan_dist, expand_state)
 
 def test_env():
     from agent import RandomAgent

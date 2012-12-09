@@ -1,38 +1,57 @@
-def next_step(dx,dy):
-    if dx>0:
-        action = Lightroom.actions.E
-    elif dx<0:
-        action = Lightroom.actions.W
-    elif dy>0:
-        action = Lightroom.actions.S
-    elif dy<0:
-        action = Lightroom.actions.N
-    return action
+from random import random, choice
 
 def make_option(a_field, an_action):
     class LightroomOption(Option):
         field = a_field
         action = an_action
 
-        def choose_action(self, env, state):
-            filtered_states = filter_states(env, self.field)
-            key_state = filtered_states[0]
-            if state == key_state:
-                return action
-            else:
-                x,y = state
-                kx,ky = key_state
-                assert (dx or dy)
-                return next_step(kx-x,kx-y)
-                    
-        def can_initiate(self, env, state):
-            return bool(len(filtered_states))
-
         def is_terminated(self, env, state):
-            # This is just opposite condition as can_initiate.
-            # We can start option when there is a key, we can stop when there's no key.
-            return not self.can_initiate(env, state)
-    return LightroomOption
+            pass
+
+        canTerminate = is_terminated
+
+        def can_initiate(self, env, state):
+            pass
+
+        canInitialize = can_initiate
+
+class Option2(object):
+    epsilon = 0.01
+    def __init__(self):
+        self.plan = None # plan is none or a list of posn-tuples on main path.
+
+class KeyOption(Option2):
+    def can_initiate(self, env, state):
+        return (state.h == 0)
+
+    def canInitialize(self, state):
+        return self.can_initiate(None, state)
+
+    def is_terminated(self, env, state):
+        if random() < self.epsilon:
+            return True
+        return (state.h == 1)
+
+    def canTerminate(self, state):
+        return self.is_terminated(None, state)
+
+    def choose_action(self, env, state):
+        pos = (state.x, state.y)
+        if self.plan is None or pos not in self.plan:
+            key_pos = filter_states(env.states, env.field.KEY)
+            # Not positive if this is right move here.
+            if not key_pos:
+                return choice(env.actions)
+            priority_func = lambda s: manhattan_dist(s, env.goal)
+            expand_partial = lambda s: expand_state(env.states, s)
+            self.plan = search.best_first_graph_search(state, key_pos[0], priority_func, expand_partial)
+        for i, pathpos in enumerate(self.plan):
+            if i == len(self.plan)-1:
+                return Lightworld.action.G
+            elif pos == pathpos:
+                fx,fy = pathpos
+                dx,dy = (fx-state.x, fy-state.y)
+                return env.movemap[dx,dy]
 
 class OptionAgent2(OptionAgent):
     def __init__(self):
@@ -54,7 +73,7 @@ class OptionAgent2(OptionAgent):
         return
 
 
-KeyOption = make_option(Lightroom.field.KEY, Lightroom.actions.G)
-LockOption = make_option(Lightroom.field.LOCK, Lightroom.actions.I)
-# This action can be none since we should never be able to act while on a door.
-DoorOption = make_option(Lightroom.field.DOOR, None)
+#KeyOption = make_option(Lightroom.field.KEY, Lightroom.actions.G)
+#LockOption = make_option(Lightroom.field.LOCK, Lightroom.actions.I)
+## This action can be none since we should never be able to act while on a door.
+#DoorOption = make_option(Lightroom.field.DOOR, None)

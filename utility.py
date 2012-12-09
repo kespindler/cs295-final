@@ -1,6 +1,9 @@
 from time import sleep
 from numpy import array
 
+def filter_states(states, field):
+    return zip(*where(states == field))
+
 def enum(*sequential,**named):
     enums = dict(zip(sequential, range(len(sequential))),**named)
     s = type('Enum',(), enums)
@@ -59,3 +62,14 @@ def rooms_from_fpath(fpath):
     rooms = uniform_arr(*strings)
     print rooms
     return rooms
+
+class Bidict(dict):
+    def __init__(self, d):
+        for k,v in d.items():
+            self[k] = v
+        self.reverse = {v:k for k,v in d.items()}
+    
+    def __getitem__(self, key):
+        if key in self:
+            dict.__getitem__(self, key)
+        return self.reverse[key]
