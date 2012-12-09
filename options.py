@@ -1,21 +1,42 @@
+from utility import enum
+from random import random
+
 class Option(StandardAgent):
     """ Option
         Core learning uses standard agent to track qvalues, run SARSA(lambda)
         Only additions are initialization and termination sets
     """
-    
-    def __init__(self, stateDesc, actionDesc, init, terminate):
-        """ init and terminate are functions
-        """
-        super(Option, self).__init__(stateDesc, actionDesc)
-        self.init = init
-        self.terminate = terminate
-    
-    def canInitialize(self, obs):
-        return init(obs)
-    
-    def terminate(self, obs):
-        return terminate(obs)
+    epsilon = .01
+
+class KeyOption(Option):
+    def canTerminate(self, state):
+        if random() < self.epsilon:
+            return True
+        return (state.h == 1)
+
+    def canInitialize(self, state):
+        return (state.h == 0) # Maybe want to modify this?
+
+
+class LockOption(Option):
+    def canTerminate(self, state):
+        if random() < self.epsilon:
+            return True
+        return (state.l == 0)
+
+    def canInitialize(self, state):
+        return (state.l == 1)# Maybe want to modify this.
+
+
+class DoorOption(Option):
+    def canTerminate(self, state):
+        if random() < self.epsilon:
+            return True
+        return (state.r > self.last_room)
+
+    def canInitialize(self, state):
+        self.last_room = 0
+        return True # Maybe want to modify this.
 
 class OptionsAgent(StandardAgent):
     numOptions = 3
@@ -25,9 +46,9 @@ class OptionsAgent(StandardAgent):
         super(OptionAgent, self).__init__(stateDesc, numOptions)
         # TODO: set up option init and terminate
         self.options = [
-            Option(stateDesc, actionDesc, keyInit, keyTerminate), # key
-            Option(stateDesc, actionDesc, lockInit, lockTerminate), # lock
-            Option(stateDesc, actionDesc, doorInit, doorTerminate) # door
+            KeyOption(stateDesc, actionDesc),
+            LockOption(stateDesc, actionDesc),
+            DoorOption(stateDesc, actionDesc)
         ]
         self.currentOption = None
         self.currentOptionName = None
@@ -49,7 +70,7 @@ class OptionsAgent(StandardAgent):
             self.currentOptionKey = next
             self.currentOption = self.options[next]
             # Check that option is initializable
-            if !self.currentOption.canInitialize(obs):
+            if not self.currentOption.canInitialize(obs):
                 # if it is not set its qvalue so it is never picked again
                 self.qTable[obs + tuple(next)] = float("-inf")
                 next = None
