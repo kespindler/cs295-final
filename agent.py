@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from random import random, choice, randint
 from numpy import array, zeros, ones, append, argmax, unravel_index, where
+from options2 import KeyOption
 
 class Agent(object):
     __metaclass__ = ABCMeta
@@ -9,7 +10,7 @@ class Agent(object):
         self.stepCount = 0
     
     @abstractmethod
-    def choose_action(self, env, obs):
+    def choose_action(self, env, state):
         """ Returns an action chosen using the agent's learned policy + exploration
             In MDP case, obs is just a state descriptor
             In POMDP, obs is full observation
@@ -20,7 +21,7 @@ class Agent(object):
         return None
     
     @abstractmethod
-    def feedback(self, obs, a, r, nextobs, nexta = None):
+    def feedback(self, state, action, reward, state2, action2 = None):
         """ Logs feedback from environment in SARSA form with agent
             As usual, obs is just a state in MDPs
             obs and a are tuples, r is a float
@@ -150,5 +151,32 @@ class RandomAgent(Agent):
         return array([choice(env.actions)])
 
     def feedback(self, obs, action, reward, obs2): 
+        pass
+
+
+class TestOptionAgent(Agent):
+    def __init__(self):
+        Agent.__init__(self)
+        self.options = [KeyOption()]
+        self.option = None
+        self.room = -1
+
+    def choose_action(self, env, state):
+        if self.room != state.r:
+            self.room = state.r
+            self.option = None
+        if self.option is None or self.option.is_terminated(env, state):
+            if self.options[0].can_initiate(env, state):
+                print "Initiate option"
+                self.option = self.options[0]
+            else:
+                print "option completed"
+                return array([choice(env.actions)])
+        return self.option.choose_action(env, state)
+
+    def feedback(self, state, action, reward, state2, action2 = None):
+        pass
+
+    def episode_finished(self):
         pass
 

@@ -29,15 +29,22 @@ def test_bfs():
     print best_first_graph_search((1,1), goal, manhattan_dist_partial, expand_state_partial)
 
 
-def test_env():
-    from agent import RandomAgent
+def test_env(cls_agent):
     from utility import rooms_from_fpath, run_experiment
     from pygamerenderer import PygameRenderer
     from environment import Lightworld
     lightworld = Lightworld(*rooms_from_fpath('basic_lightworld.txt'))
-    agent = RandomAgent()
+    agent = cls_agent()
     rend = PygameRenderer(lightworld)
     run_experiment(lightworld, agent, rend)
 
+def test_env1():
+    from agent import RandomAgent
+    test_env(RandomAgent)
+
+def test_env1():
+    from agent import TestOptionAgent
+    test_env(TestOptionAgent)
+
 if __name__ == "__main__":
-    test_new_env()
+    test_env1()

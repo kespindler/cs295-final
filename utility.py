@@ -1,5 +1,5 @@
 from time import sleep
-from numpy import array
+from numpy import array, where
 
 def filter_states(states, field):
     return zip(*where(states == field))
@@ -71,5 +71,5 @@ class Bidict(dict):
     
     def __getitem__(self, key):
         if key in self:
-            dict.__getitem__(self, key)
+            return dict.__getitem__(self, key)
         return self.reverse[key]
