@@ -30,7 +30,7 @@ def test_bfs():
 
     print best_first_graph_search((1,1), (w-2, h-2), manhattan_dist, expand_state)
 
-def test_new_env():
+def test_env():
     from agent import RandomAgent
     from utility import rooms_from_fpath, run_experiment
     from pygamerenderer import PygameRenderer

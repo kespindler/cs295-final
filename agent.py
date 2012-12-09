@@ -97,7 +97,7 @@ class StandardAgent(Agent):
         # nextobs = tuple(int(x) for x in nextobs)[0:len(self.stateDesc)]
         # nexta = tuple(int(x) for x in nexta)[0:len(self.actionDesc)]
         obs = obs[0:self.stateNum]
-        a = a[0:self.actionNum]
+        a = tuple(a[0:self.actionNum])
         nextobs = nextobs[0:self.stateNum]
         nexta = nexta[0:self.actionNum]
         
