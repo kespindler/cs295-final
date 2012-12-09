@@ -162,9 +162,6 @@ class TestOptionAgent(Agent):
         self.room = -1
 
     def choose_action(self, env, state):
-        if self.room != state.r:
-            self.room = state.r
-            self.option = None
         if self.option is None or self.option.is_terminated(env, state):
             if self.options[0].can_initiate(env, state):
                 print "Initiate option"

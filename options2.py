@@ -19,6 +19,7 @@ class Option2(object):
 
 class KeyOption(Option2):
     def can_initiate(self, env, state):
+        self.room = -1
         return (state.h == 0)
 
     def is_terminated(self, env, state):
@@ -27,13 +28,16 @@ class KeyOption(Option2):
         return (state.h == 1)
 
     def choose_action(self, env, state):
+        if self.room != state.r:
+            self.room = state.r
+            self.plan = None
         pos = (state.x, state.y)
         if self.plan is None or pos not in self.plan:
             key_pos = filter_states(env.states, env.field.KEY)
             # Not positive if this is right move here.
             if not key_pos:
                 return array([choice(env.actions)])
-            priority_func = lambda s: manhattan_dist(s, env.goal)
+            priority_func = lambda s: manhattan_dist(s, key_pos[0])
             expand_partial = lambda s: expand_state(env.states, s)
             self.plan = search.best_first_graph_search(pos, key_pos[0], priority_func, expand_partial)
         for i, pathpos in enumerate(self.plan):
