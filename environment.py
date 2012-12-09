@@ -22,12 +22,10 @@ class Environment(object):
     def new_state(self):
         return None # state
 
-    def is_finished(self, state):
-        return False
-
 
 State = namedtuple('State', [c for c in 'rxyhl'] + 
         [''.join(x) for x in product('nsew', 'rgb')])
+
 
 class Lightworld(Environment):
     # NSEW is north south east west

@@ -30,7 +30,7 @@ def run_experiment(env, agent, rend = None, steps = None, delay = 0):
                 steps -= 1
 
         current_state = run_interaction(current_state, True)
-        if env.is_finished(current_state):
+        if env.episode_finished(current_state):
             agent.episode_finished()
             env.restart_episode()
             current_state = env.new_state()

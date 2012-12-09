@@ -36,7 +36,6 @@ class Agent(object):
         self.stepCount = 0
         return totalsteps
     
-    
 
 class StandardAgent(Agent):
     """ Standard agent that learns with SARSA(lambda)
