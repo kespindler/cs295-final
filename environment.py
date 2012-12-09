@@ -85,6 +85,9 @@ class Lightworld(Environment):
         pos = choice(filter_states(self.states, self.field.INIT))
         return self.calculate_state(pos)
 
+    def restart_episode(self):
+        self.set_room(0)
+
     def perform_action(self, state, action):
         assert action.shape == (1,)
         action = action[0] # in this case action i s 
