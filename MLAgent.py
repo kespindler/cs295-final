@@ -1,5 +1,5 @@
 from agent import Agent
-from numpy import identity
+from numpy import identity, dot
 
 class RLSSarsaAgent(Agent):
     """ Agent that learns on continuous or infinite state space
@@ -55,3 +55,12 @@ class RLSSarsaAgent(Agent):
         
         # update epsilon
         self.epsilon = self.slambda * self.gamma * self.epsilon + feat
+        
+        # update b mat
+        # start by computing common components
+        lastb = feat - self.gamma * nextfeat
+        lastb = lastb.transpose()
+        lastb = lastb * self.bmat
+        # numerator
+        numerator = self.bmat * self.epsilon * lastb
+        

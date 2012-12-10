@@ -40,6 +40,8 @@ class DoorOption(Option):
         return True # Maybe want to modify this.
 
 class OptionAgent(SarsaAgent):
+    optionEnum = enum(KEY=1, LOCK=2, DOOR=3)
+    
     def __init__(self, stateDesc, actionDesc):
         self.options = [
             KeyOption(stateDesc, actionDesc),
@@ -83,15 +85,15 @@ class OptionAgent(SarsaAgent):
         """ Shape reward based on current option
         """
         optr = -1 # default step cost
-        if self.currentOptionKey == 'Key':
+        if self.currentOptionKey == optionEnum.KEY:
             if obs[3] == 0 and nextobs[3] == 1:
                 optr = 100
             # check if key has been picked up
-        elif self.currentOptionKey == 'lock':
+        elif self.currentOptionKey == optionEnum.LOCK:
             # check if door is unlocked
             if obs[4] == 0 and nextobs[4] == 1:
                 optr = 100
-        elif self.currentOptionKey == 'door':
+        elif self.currentOptionKey == optionEnum.DOOR:
             # check if room has changed
             if obs[0] != nextobs[0]:
                 optr = 100
