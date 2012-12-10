@@ -1,5 +1,6 @@
 from time import sleep
 from numpy import array, where
+from datetime import datetime
 
 def filter_states(states, field):
     return zip(*where(states == field))
@@ -11,8 +12,9 @@ def enum(*sequential,**named):
     s.__getitem__ = lambda self, i: enums.values()[i]
     return s()
 
-def run_experiment(env, agent, rend = None, steps = None, delay = 0):
+def run_experiment(env, agent, rend = None, steps = None, delay = 0, outfpath = None):
     i = 0
+    last = 0
     def run_interaction(state, render=False):
         action = agent.choose_action(env, state)
         state2, reward = env.perform_action(state, action)
@@ -21,6 +23,10 @@ def run_experiment(env, agent, rend = None, steps = None, delay = 0):
             rend.update(state2)
         return state2
  
+    if outfpath:
+        with open(outfpath, 'a') as f:
+            f.write('BEGAN ' + str(datetime.now()) + '\n')
+
     current_state = env.new_state()
     while 1:
         if steps is not None:
@@ -32,8 +38,12 @@ def run_experiment(env, agent, rend = None, steps = None, delay = 0):
         current_state = run_interaction(current_state, True)
         if env.episode_finished(current_state):
             agent.episode_finished()
+            if outfpath:
+                with open(outfpath, 'a') as f:
+                    f.write(str(i - last) + '\n')
             env.restart_episode()
             current_state = env.new_state()
+            last = i
 
         if delay > 0:
             sleep(delay)

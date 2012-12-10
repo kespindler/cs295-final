@@ -7,7 +7,7 @@ from pygamerenderer import PygameRenderer
 from utility import rooms_from_fpath, run_experiment
 
 problemSpaceDim = 5
-agentSpaceDim = 12
+#agentSpaceDim = 12
 
 rooms = gen_world()
 env = Lightworld(*[room for iskey, room in rooms])
@@ -15,6 +15,7 @@ env = Lightworld(*rooms_from_fpath('basic_lightworld.txt'))
 stateDesc = env.dimensions()[0:problemSpaceDim]
 actionDesc = (6,)
 agent = OptionAgent(stateDesc, actionDesc)
-rend = PygameRenderer(env)
+#rend = PygameRenderer(env)
+rend = None
 
-run_experiment(env, agent, rend)
+run_experiment(env, agent, rend, outfpath = 'optionagent.txt')

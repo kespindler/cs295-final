@@ -62,7 +62,7 @@ class OptionAgent(SarsaAgent):
             self.currentOptionKey = None
         
         # choose option
-        while self.currentOption == None:
+        while self.currentOption is None:
             next = None
             next = super(OptionAgent, self).choose_action(env, obs)
             self.currentOptionKey = next
