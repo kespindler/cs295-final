@@ -40,7 +40,6 @@ class DoorOption(Option):
 
 class OptionsAgent(SarsaAgent):
     numOptions = 3
-    options = enum(KEY=0,LOCK=1,DOOR=2)
     
     def __init__(self, stateDesc, actionDesc):
         super(OptionAgent, self).__init__(stateDesc, numOptions)
@@ -100,15 +99,11 @@ class OptionsAgent(SarsaAgent):
         
         return optr
         
-    
     def feedback(self, obs, a, r, nextobs, nexta = None):
         if self.currentOption != None:
             optr = self.shapeReward(obs, r, nextobs)
             self.currentOption.feedback(obs,a,optr,nextobs,nexta)
-            
-            #
             nexta = self.currentOptionKey
-            
             # check if state terminates
             if self.currentOption.terminate(obs):
                 self.currentOption = None
@@ -116,12 +111,9 @@ class OptionsAgent(SarsaAgent):
                 nexta = None # force it to choose egreedily
         
             super(OptionAgent, self).feedback(obs, self.currentOptionKey, r, nextobs, nexta)
-        
-        return
     
     def episode_finished(self):
-        """ Reset options in addition to resetting self
-        """
+        """ Reset options in addition to resetting self """
         o.episode_finished() for o in self.options
         return super(OptionAgent, self).episode_finished()
 
@@ -129,4 +121,3 @@ class OptionsAgent(SarsaAgent):
 # from pylov.lightroom import Lightroom
 # from pylov.environment import filter_states
 # 
-

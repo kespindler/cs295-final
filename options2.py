@@ -99,29 +99,3 @@ class DoorOption(Option2):
                 dx,dy = (fx-state.x, fy-state.y)
                 print 'move in direction',dx,dy,'for door plan'
                 return array([env.movemap[dx,dy]])
-
-
-#class OptionAgent2(OptionAgent):
-#    def __init__(self):
-#        self.cur_option = None
-#        self.options = [KeyOption(), LockOption(), DoorOption()]
-#
-#    def choose_action(self, env, obs):
-#        if self.cur_option is not None and self.cur_option.is_terminated(self, env, obs):
-#            self.cur_option = None
-#        if self.cur_option is None:
-#            for o in self.options:
-#                if o.can_initiate(self, env, obs):
-#                    self.cur_option = o
-#                    break
-#        return self.cur_option.chhose_action(self, env, state)
-#
-#    
-#    def feedback(self, obs, action, reward, obs2): 
-#        return
-
-
-#KeyOption = make_option(Lightroom.field.KEY, Lightroom.actions.G)
-#LockOption = make_option(Lightroom.field.LOCK, Lightroom.actions.I)
-## This action can be none since we should never be able to act while on a door.
-#DoorOption = make_option(Lightroom.field.DOOR, None)

@@ -39,7 +39,7 @@ class Lightworld(Environment):
         actions.W:(-1, 0)})
     step_reward = -1
     final_reward = 1000
-    task_reward = 1
+    task_reward = -1
 
     def set_room(self, room):
         assert 0 <= room < len(self.rooms)
