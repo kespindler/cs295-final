@@ -6,7 +6,9 @@ import numpy as np
 def read_and_create_graph(files):
     numlist = [np.loadtxt(f, comments='BEGAN') for f in files]
     plt.plot(np.arange(max(len(d) for d in numlist)),numlist[0])
-    plt.show()
+    #plt.show()
+    plt.savefig('out.png')
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
