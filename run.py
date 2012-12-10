@@ -4,13 +4,14 @@ from lightworld_gen import gen_world
 from agent import SarsaAgent, RandomAgent
 from options import OptionAgent
 from pygamerenderer import PygameRenderer
-from utility import run_experiment
+from utility import rooms_from_fpath, run_experiment
 
 problemSpaceDim = 5
 agentSpaceDim = 12
 
 rooms = gen_world()
 env = Lightworld(*[room for iskey, room in rooms])
+env = Lightworld(*rooms_from_fpath('basic_lightworld.txt'))
 stateDesc = env.dimensions()[0:problemSpaceDim]
 actionDesc = (6,)
 agent = OptionAgent(stateDesc, actionDesc)
