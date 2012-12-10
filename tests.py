@@ -42,9 +42,9 @@ def test_env1():
     from agent import RandomAgent
     test_env(RandomAgent)
 
-def test_env1():
+def test_env2():
     from agent import TestOptionAgent
     test_env(TestOptionAgent)
 
 if __name__ == "__main__":
-    test_env1()
+    test_env2()

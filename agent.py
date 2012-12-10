@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from random import random, choice, randint
 from numpy import array, zeros, ones, append, argmax, unravel_index, where
-from options2 import KeyOption
+from options2 import KeyOption, LockOption, DoorOption
 
 class Agent(object):
     __metaclass__ = ABCMeta
@@ -156,23 +156,24 @@ class RandomAgent(Agent):
 class TestOptionAgent(Agent):
     def __init__(self):
         Agent.__init__(self)
-        self.options = [KeyOption()]
+        self.options = [KeyOption(), LockOption(), DoorOption()]
         self.option = None
-        self.room = -1
 
     def choose_action(self, env, state):
         if self.option is None or self.option.is_terminated(env, state):
-            if self.options[0].can_initiate(env, state):
-                print "Initiate option"
-                self.option = self.options[0]
-            else:
-                print "option completed"
-                return array([choice(env.actions)])
-        return self.option.choose_action(env, state)
+            for opt in self.options:
+                print opt
+                if opt.can_initiate(env, state):
+                    print "Initiate option", opt
+                    self.option = opt
+                    break
+        if self.option is None:
+            return array([choice(env.actions)])
+        else:
+            return self.option.choose_action(env, state)
 
     def feedback(self, state, action, reward, state2, action2 = None):
         pass
 
     def episode_finished(self):
         pass
-
