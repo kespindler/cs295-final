@@ -54,9 +54,9 @@ class SarsaAgent(Agent):
         """
         super(StandardAgent, self).__init__()
         self.stateDesc = stateDesc
-        self.stateNum = len(self.stateDesc)
+        self.stateDim = len(self.stateDesc)
         self.actionDesc = actionDesc
-        self.actionNum = len(self.actionDesc)
+        self.actionDim = len(self.actionDesc)
         self.qTable = zeros(stateDesc + actionDesc)
         self.alpha = alpha
         self.gamma = gamma
@@ -70,7 +70,7 @@ class SarsaAgent(Agent):
     def choose_action(self, env, obs):
         super(StandardAgent, self).choose_action(env, obs)
         # obs = tuple(int(x) for x in obs)[0:len(self.stateDesc)]
-        obs = obs[0:self.stateNum]
+        obs = obs[0:self.stateDim]
         i = self.nextAction
         if i == None:
             # Get subtable of actions at given state
@@ -101,10 +101,10 @@ class SarsaAgent(Agent):
         # a = tuple(int(x) for x in a)[0:len(self.actionDesc)]
         # nextobs = tuple(int(x) for x in nextobs)[0:len(self.stateDesc)]
         # nexta = tuple(int(x) for x in nexta)[0:len(self.actionDesc)]
-        obs = obs[0:self.stateNum]
-        a = tuple(a[0:self.actionNum])
-        nextobs = nextobs[0:self.stateNum]
-        nexta = nexta[0:self.actionNum]
+        obs = obs[0:self.stateDim]
+        a = tuple(a[0:self.actionDim])
+        nextobs = nextobs[0:self.stateDim]
+        nexta = nexta[0:self.actionDim]
         
         sa = obs+a
         q = self.qTable[sa]
