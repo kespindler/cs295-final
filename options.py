@@ -50,7 +50,7 @@ class OptionsAgent(SarsaAgent):
             DoorOption(stateDesc, actionDesc)
         ]
         self.currentOption = None
-        self.currentOptionName = None
+        self.currentOptionKey = None
     
     def choose_action(self, env, obs):
         """ Choose option from meta-policy if no option is chosen
@@ -60,7 +60,7 @@ class OptionsAgent(SarsaAgent):
         if (self.currentOption != None 
             && self.currentOption.terminate(obs)):
             self.currentOption = None
-            self.currentOptionName = None
+            self.currentOptionKey = None
         
         # choose option
         while self.currentOption == None:
@@ -73,7 +73,7 @@ class OptionsAgent(SarsaAgent):
                 # if it is not set its qvalue so it is never picked again
                 self.qTable[obs + tuple(next)] = float("-inf")
                 next = None
-                self.currentOptionName = None
+                self.currentOptionKey = None
                 self.currentOption = None
         
         # get action
@@ -84,15 +84,15 @@ class OptionsAgent(SarsaAgent):
         """ Shape reward based on current option
         """
         optr = -1 # default step cost
-        if self.currentOptionName == 'Key':
+        if self.currentOptionKey == 'Key':
             if obs[3] == 0 && nextobs[3] == 1:
                 optr = 100
             # check if key has been picked up
-        elif self.currentOptionName == 'lock':
+        elif self.currentOptionKey == 'lock':
             # check if door is unlocked
             if obs[4] == 0 && nextobs[4] == 1:
                 optr = 100
-        elif self.currentOptionName == 'door':
+        elif self.currentOptionKey == 'door':
             # check if room has changed
             if obs[0] != nextobs[0]:
                 optr = 100

@@ -1,4 +1,5 @@
 from agent import Agent
+from numpy import identity
 
 class RLSSarsaAgent(Agent):
     """ Agent that learns on continuous or infinite state space
@@ -7,10 +8,34 @@ class RLSSarsaAgent(Agent):
         [http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=4667071&tag=1]
     """
     
-    def __init__(self, statedim, actiondim,
-                alpha = 0.1, gamma = 0.99, slambda = 0.9, epsilon = 0.01)
-
-class RLSSarsa(object):
-    """ Implementation of Recursive Least Sqaures Sarsa(lambda) from 
-    """
+    def __init__(self, stateDim, actionDesc,
+                alpha = 0.1, gamma = 0.99, slambda = 0.9, epsilon = 0.01):
+        super(RLSSarsaAgent, self).__init__()
+        self.stateDim = stateDim
+        self.actionDesc = actionDesc
+        self.actionDim = len(actionDesc)
+        self.alpha = alpha
+        self.gamma = gamma
+        self.slambda = slambda
+        self.epsilon = epsilon
+        
+        # init for rls-sarsa
+        self.porder = 2
+        self.featureNum = (self.stateDim + self.actionDim) * (self.porder + 1)
+        self.delta = 1
+        self.bmat = identity(self.featureNum) * self.delta
+        self.bvec = zeros((self.featureNum, 1))
+        self.weights = zeros((self.featureNum,1))
+        self.epsilon = 0
+        
+        self.nextAction = 
     
+    def choose_action(self, env, obs):
+        """ Evaluate function using current weights for all actions
+            Pick max
+        """
+        # TODO
+    
+    def feedback(self, obs, a, r, nextobs, nexta = None):
+        """ Update epsilon, B, b, and weights
+        """
