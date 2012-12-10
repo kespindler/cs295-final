@@ -100,15 +100,13 @@ class OptionAgent(SarsaAgent):
         
     def feedback(self, obs, a, r, nextobs, nexta = None):
         if self.currentOption != None:
+            # update current option
             optr = self.shapeReward(obs, r, nextobs)
             self.currentOption.feedback(obs,a,optr,nextobs,nexta)
+            
+            # update metapolicy
+            a = self.currentOptionKey
             nexta = self.currentOptionKey
-            # check if state terminates
-            if self.currentOption.canTerminate(obs):
-                self.currentOption = None
-                self.currentOptionKey = None
-                nexta = None # force it to choose egreedily
-        
             super(OptionAgent, self).feedback(obs, self.currentOptionKey, r, nextobs, nexta)
     
     def episode_finished(self):

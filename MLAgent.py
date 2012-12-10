@@ -8,7 +8,6 @@ class RLSSarsaAgent(Agent):
         [http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=4667071&tag=1]
     """
     
-    
     def __init__(self, stateDim, stateOffset, actionDesc,
                 alpha = 0.1, gamma = 0.99, slambda = 0.9, epsilon = 0.01):
         super(RLSSarsaAgent, self).__init__()
@@ -46,3 +45,13 @@ class RLSSarsaAgent(Agent):
             self.nextAction = nexta
         
         obs = obs[self.stateOffset:(self.stateOffset+self.stateDim)]
+        a = tuple(a[0:self.actionDim])
+        nextobs = nextobs[self.stateOffset:(self.stateOffset+self.stateDim)]
+        nexta = tuple(nexta[0:self.actionDim])
+        
+        # convert feedback to feature vector
+        feat = poly_basis(obs+a)
+        nextfeat = polybasis(nextobs+nexta)
+        
+        # update epsilon
+        self.epsilon = self.slambda * self.gamma * self.epsilon + feat
