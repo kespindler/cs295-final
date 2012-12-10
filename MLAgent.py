@@ -1,5 +1,6 @@
 from agent import Agent
-from numpy import identity
+from numpy import identity, dot, where
+from random import choice, random, randint
 
 class RLSSarsaAgent(Agent):
     """ Agent that learns on continuous or infinite state space
@@ -13,8 +14,7 @@ class RLSSarsaAgent(Agent):
         super(RLSSarsaAgent, self).__init__()
         self.stateDim = stateDim
         self.stateOffset = stateOffset
-        self.actionDesc = actionDesc
-        self.actionDim = len(actionDesc)
+        self.actionNum = actionDesc # let's just assume this is an int for now
         self.alpha = alpha
         self.gamma = gamma
         self.slambda = slambda
@@ -27,15 +27,40 @@ class RLSSarsaAgent(Agent):
         self.bmat = identity(self.featureNum) * self.delta
         self.bvec = zeros((self.featureNum, 1))
         self.weights = zeros((self.featureNum,1))
-        self.epsilon = 0
+        self.epsilon = zeros((self.featureNum,1))
         
         self.nextAction = None
     
     def choose_action(self, env, obs):
         """ Evaluate function using current weights for all actions
-            Pick max
+            Pick max to find next action
         """
-        # TODO
+        obs = obs[self.stateOffset:(self.stateOffset+self.stateDim)]
+        i = self.nextAction
+        if i is None:
+            if random() > self.epsilon:
+                # choose greedily
+                outputs = []
+        
+                # loop over actions and find estimated Q value for each paired with obs
+                for i in range(0, self.actionNum, 1):
+                    feat = self.poly_basis(obs+tuple(i))
+                    estQ = dot(self.weights.transpose(), feat)
+                    outputs.append(estQ)
+        
+                # find the max action
+                # if multiple exist pick randomly
+                maxobj = max(outputs)
+                i = choice([i for i, v in enumerate(outputs) if v == maxobj])
+            else:
+                # choose randomly
+                i = array(tuple(randint(0, self.actionNum)))
+        
+        # cleanup
+        self.nextAction = None
+        self.epsilon *= self.decay
+        
+        return i
     
     def feedback(self, obs, a, r, nextobs, nexta = None):
         """ Update epsilon, B, b, and weights
@@ -45,13 +70,42 @@ class RLSSarsaAgent(Agent):
             self.nextAction = nexta
         
         obs = obs[self.stateOffset:(self.stateOffset+self.stateDim)]
-        a = tuple(a[0:self.actionDim])
+        a = tuple(a)
         nextobs = nextobs[self.stateOffset:(self.stateOffset+self.stateDim)]
-        nexta = tuple(nexta[0:self.actionDim])
+        nexta = tuple(nexta)
         
         # convert feedback to feature vector
-        feat = poly_basis(obs+a)
-        nextfeat = polybasis(nextobs+nexta)
+        feat = self.poly_basis(obs+a)
+        nextfeat = self.poly_basis(nextobs+nexta)
         
         # update epsilon
         self.epsilon = self.slambda * self.gamma * self.epsilon + feat
+        
+        # update b mat
+        # start by computing common components
+        lastb = feat - self.gamma * nextfeat
+        lastb = lastb.transpose()
+        lastb = dot(lastb, self.bmat)
+        # numerator
+        numerator = dot(self.bmat, dot(self.epsilon, lastb))
+        denominator = 1 + dot(lastb,e)
+        self.bmat = self.bmat - (numerator / denominator)
+        
+        # update b vec
+        self.bvec = self.bvec + r * self.epsilon
+        
+        # find weights
+        self.weights = dot(self.bmat, self.bvec)
+    
+    def poly_basis(self, vec):
+        """ convert observations to polynomial basis of degree self.featureNum
+        """
+        vec = array(vec)
+        feat = zeros((self.featureNum,1))
+        for i in range(0, self.porder, 1):
+            if i is 0:
+                feat[:self.stateDim] = 1 # constant term is easy to compute
+            else:
+                feat[(i*self.stateDim):((i+1)*self.stateDim)] = vec ** i
+        
+        return feat
