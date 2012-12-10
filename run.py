@@ -12,7 +12,7 @@ rooms = gen_world()
 env = Lightworld(*[room for iskey, room in rooms])
 stateDesc = env.dimensions()[0:problemSpaceDim]
 actionDesc = (6,)
-agent = StandardAgent(stateDesc, actionDesc)
+agent = SarsaAgent(stateDesc, actionDesc)
 # agent = RandomAgent()
 rend = PygameRenderer(env)
 

@@ -1,7 +1,7 @@
 from utility import enum
 from random import random
 
-class Option(StandardAgent):
+class Option(SarsaAgent):
     """ Option
         Core learning uses standard agent to track qvalues, run SARSA(lambda)
         Only additions are initialization and termination sets
@@ -38,7 +38,7 @@ class DoorOption(Option):
         self.last_room = 0
         return True # Maybe want to modify this.
 
-class OptionsAgent(StandardAgent):
+class OptionsAgent(SarsaAgent):
     numOptions = 3
     options = enum(KEY=0,LOCK=1,DOOR=2)
     

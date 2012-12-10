@@ -3,6 +3,11 @@ from random import random, choice, randint, shuffle
 from numpy import array, zeros, ones, append, argmax, unravel_index, where
 from options2 import KeyOption, LockOption, DoorOption
 
+""" Default agent super class
+    SARSA(lambda) and Random implementations
+    Perfect options [I think this should be moved to options2.py - rl]
+"""
+
 class Agent(object):
     __metaclass__ = ABCMeta
     
@@ -37,7 +42,7 @@ class Agent(object):
         return totalsteps
     
 
-class StandardAgent(Agent):
+class SarsaAgent(Agent):
     """ Standard agent that learns with SARSA(lambda)
     """
     def __init__(self, stateDesc, actionDesc, 
@@ -144,7 +149,8 @@ class StandardAgent(Agent):
 
 
 class RandomAgent(Agent):
-    
+    """ Selects actions entirely at random
+    """
     def choose_action(self, env, obs):
         super(RandomAgent, self).choose_action(env, obs)
         return array([choice(env.actions)])
