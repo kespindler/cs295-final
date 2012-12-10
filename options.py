@@ -40,6 +40,7 @@ class DoorOption(Option):
         return True # Maybe want to modify this.
 
 class OptionAgent(SarsaAgent):
+    optionReward = 100 # shaped reward given to option
     optionEnum = enum(KEY=1, LOCK=2, DOOR=3)
     
     def __init__(self, stateDesc, actionDesc):
@@ -48,7 +49,7 @@ class OptionAgent(SarsaAgent):
             LockOption(stateDesc, actionDesc),
             DoorOption(stateDesc, actionDesc)
         ]
-        SarsaAgent.__init__(self, stateDesc, len(self.options))
+        super(OptionAgent, self).__init__(stateDesc, len(self.options))
         # TODO: set up option init and terminate
         self.currentOption = None
         self.currentOptionKey = None
@@ -56,7 +57,9 @@ class OptionAgent(SarsaAgent):
     def choose_action(self, env, obs):
         """ Choose option from meta-policy if no option is chosen
             Then choose action from option
+            Note - step count returned
         """
+        
         # Check if option has terminated
         if (self.currentOption is not None 
             and self.currentOption.canTerminate(obs)):
@@ -64,44 +67,40 @@ class OptionAgent(SarsaAgent):
             self.currentOptionKey = None
         
         # choose option
-        while self.currentOption == None:
-            next = None
-            next = super(OptionAgent, self).choose_action(env, obs)
-            self.currentOptionKey = next
+        while self.currentOption is None:
+            self.currentOptionKey = super(OptionAgent, self).choose_action(env, obs)
             self.currentOption = self.options[next]
             # Check that option is initializable
             if not self.currentOption.canInitialize(obs):
                 # if it is not set its qvalue so it is never picked again
-                self.qTable[obs[:self.stateDim] + tuple(next)] = float("-inf")
-                next = None
+                self.qTable[obs + tuple(next)] = float("-inf")
                 self.currentOptionKey = None
                 self.currentOption = None
         
         # get action
         return self.currentOption.choose_action(env, obs)
     
-    # TODO I think this needs to be taken out...
     def shapeReward(self, obs, r, nextobs):
         """ Shape reward based on current option
         """
         optr = -1 # default step cost
         if self.currentOptionKey == optionEnum.KEY:
             if obs[3] == 0 and nextobs[3] == 1:
-                optr = 100
+                optr = optionReward
             # check if key has been picked up
         elif self.currentOptionKey == optionEnum.LOCK:
             # check if door is unlocked
             if obs[4] == 0 and nextobs[4] == 1:
-                optr = 100
+                optr = optionReward
         elif self.currentOptionKey == optionEnum.DOOR:
             # check if room has changed
             if obs[0] != nextobs[0]:
-                optr = 100
+                optr = optionReward
         
         return optr
         
     def feedback(self, obs, a, r, nextobs, nexta = None):
-        if self.currentOption != None:
+        if self.currentOption is not None:
             # update current option
             optr = self.shapeReward(obs, r, nextobs)
             self.currentOption.feedback(obs,a,optr,nextobs,nexta)
@@ -112,7 +111,9 @@ class OptionAgent(SarsaAgent):
             super(OptionAgent, self).feedback(obs, self.currentOptionKey, r, nextobs, nexta)
     
     def episode_finished(self):
-        """ Reset options in addition to resetting self """
+        """ Reset options in addition to resetting self
+            Note: value returned is number of times an option is picked
+        """
         for opt in self.options:
             opt.episode_finished()
         return super(OptionAgent, self).episode_finished()

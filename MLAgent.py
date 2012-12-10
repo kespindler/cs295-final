@@ -27,7 +27,7 @@ class RLSSarsaAgent(Agent):
         self.bmat = identity(self.featureNum) * self.delta
         self.bvec = zeros((self.featureNum, 1))
         self.weights = zeros((self.featureNum,1))
-        self.epsilon = 0
+        self.epsilon = zeros((self.featureNum,1))
         
         self.nextAction = None
     
@@ -50,8 +50,8 @@ class RLSSarsaAgent(Agent):
         nexta = tuple(nexta[0:self.actionDim])
         
         # convert feedback to feature vector
-        feat = poly_basis(obs+a)
-        nextfeat = polybasis(nextobs+nexta)
+        feat = self.poly_basis(obs+a)
+        nextfeat = self.poly_basis(nextobs+nexta)
         
         # update epsilon
         self.epsilon = self.slambda * self.gamma * self.epsilon + feat
@@ -60,7 +60,25 @@ class RLSSarsaAgent(Agent):
         # start by computing common components
         lastb = feat - self.gamma * nextfeat
         lastb = lastb.transpose()
-        lastb = lastb * self.bmat
+        lastb = dot(lastb, self.bmat)
         # numerator
-        numerator = self.bmat * self.epsilon * lastb
+        numerator = dot(self.bmat, dot(self.epsilon, lastb))
+        denominator = 1 + dot(lastb,e)
+        self.bmat = self.bmat - (numerator / denominator)
         
+        # update b vec
+        self.bvec = self.bvec + r * self.epsilon
+        
+        # find weights
+        self.weights = dot(self.bmat, self.bvec)
+    
+    def poly_basis(self, vec):
+        vec = array(vec)
+        feat = zeros((self.featureNum,1))
+        for i in range(0, self.porder, 1):
+            if i is 0:
+                feat[:self.stateDim] = 1 # constant term is easy to compute
+            else:
+                feat[(i*self.stateDim):((i+1)*self.stateDim)] = vec ** i
+        
+        return feat

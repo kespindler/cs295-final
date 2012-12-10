@@ -52,7 +52,7 @@ class SarsaAgent(Agent):
             learner is learning algorithm?
             epsilon is for epsilon exploration
         """
-        if type(actionDesc) == int:
+        if type(actionDesc) is int:
             actionDesc = (actionDesc,)
         Agent.__init__(self)
         self.stateDesc = stateDesc
@@ -74,7 +74,7 @@ class SarsaAgent(Agent):
         # obs = tuple(int(x) for x in obs)[0:len(self.stateDesc)]
         obs = obs[0:self.stateDim]
         i = self.nextAction
-        if i == None:
+        if i is None:
             # Get subtable of actions at given state
             availableActions = self.qTable[obs]
         
@@ -94,15 +94,11 @@ class SarsaAgent(Agent):
         """ Straightforward implementation of SARSALambda, maybe better if moved into subclass?
         """
         # if no next action is given choose one using policy
-        if nexta == None:
+        if nexta is None:
             nexta = self.choose_action(None, nextobs)
             self.nextAction = nexta
             #nexta = tuple(nexta)
         
-        # obs = tuple(int(x) for x in obs)[0:len(self.stateDesc)]
-        # a = tuple(int(x) for x in a)[0:len(self.actionDesc)]
-        # nextobs = tuple(int(x) for x in nextobs)[0:len(self.stateDesc)]
-        # nexta = tuple(int(x) for x in nexta)[0:len(self.actionDesc)]
         obs = obs[0:self.stateDim]
         a = tuple(a[0:self.actionDim])
         nextobs = nextobs[0:self.stateDim]
