@@ -103,10 +103,10 @@ class SarsaAgent(Agent):
         # a = tuple(int(x) for x in a)[0:len(self.actionDesc)]
         # nextobs = tuple(int(x) for x in nextobs)[0:len(self.stateDesc)]
         # nexta = tuple(int(x) for x in nexta)[0:len(self.actionDesc)]
-        obs = obs[0:self.stateNum]
-        a = tuple(a[0:self.actionNum])
-        nextobs = nextobs[0:self.stateNum]
-        nexta = tuple(nexta[0:self.actionNum])
+        obs = obs[0:self.stateDim]
+        a = tuple(a[0:self.actionDim])
+        nextobs = nextobs[0:self.stateDim]
+        nexta = tuple(nexta[0:self.actionDim])
         
         sa = obs+a
         q = self.qTable[sa]
