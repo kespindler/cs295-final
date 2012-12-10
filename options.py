@@ -1,5 +1,6 @@
 from utility import enum
 from random import random
+from agent import SarsaAgent
 
 class Option(SarsaAgent):
     """ Option
@@ -38,29 +39,27 @@ class DoorOption(Option):
         self.last_room = 0
         return True # Maybe want to modify this.
 
-class OptionsAgent(SarsaAgent):
-    numOptions = 3
-    
+class OptionAgent(SarsaAgent):
     def __init__(self, stateDesc, actionDesc):
-        super(OptionAgent, self).__init__(stateDesc, numOptions)
-        # TODO: set up option init and terminate
         self.options = [
             KeyOption(stateDesc, actionDesc),
             LockOption(stateDesc, actionDesc),
             DoorOption(stateDesc, actionDesc)
         ]
+        SarsaAgent.__init__(self, stateDesc, len(self.options))
+        # TODO: set up option init and terminate
         self.currentOption = None
-        self.currentOptionName = None
+        self.currentOptionKey = None
     
     def choose_action(self, env, obs):
         """ Choose option from meta-policy if no option is chosen
             Then choose action from option
         """
         # Check if option has terminated
-        if (self.currentOption != None 
-            && self.currentOption.terminate(obs)):
+        if (self.currentOption is not None 
+            and self.currentOption.canTerminate(obs)):
             self.currentOption = None
-            self.currentOptionName = None
+            self.currentOptionKey = None
         
         # choose option
         while self.currentOption == None:
@@ -73,7 +72,7 @@ class OptionsAgent(SarsaAgent):
                 # if it is not set its qvalue so it is never picked again
                 self.qTable[obs + tuple(next)] = float("-inf")
                 next = None
-                self.currentOptionName = None
+                self.currentOptionKey = None
                 self.currentOption = None
         
         # get action
@@ -84,15 +83,15 @@ class OptionsAgent(SarsaAgent):
         """ Shape reward based on current option
         """
         optr = -1 # default step cost
-        if self.currentOptionName == 'Key':
-            if obs[3] == 0 && nextobs[3] == 1:
+        if self.currentOptionKey == 'Key':
+            if obs[3] == 0 and nextobs[3] == 1:
                 optr = 100
             # check if key has been picked up
-        elif self.currentOptionName == 'lock':
+        elif self.currentOptionKey == 'lock':
             # check if door is unlocked
-            if obs[4] == 0 && nextobs[4] == 1:
+            if obs[4] == 0 and nextobs[4] == 1:
                 optr = 100
-        elif self.currentOptionName == 'door':
+        elif self.currentOptionKey == 'door':
             # check if room has changed
             if obs[0] != nextobs[0]:
                 optr = 100
@@ -105,16 +104,17 @@ class OptionsAgent(SarsaAgent):
             self.currentOption.feedback(obs,a,optr,nextobs,nexta)
             nexta = self.currentOptionKey
             # check if state terminates
-            if self.currentOption.terminate(obs):
+            if self.currentOption.canTerminate(obs):
                 self.currentOption = None
-                self.currentOptionName = None
+                self.currentOptionKey = None
                 nexta = None # force it to choose egreedily
         
             super(OptionAgent, self).feedback(obs, self.currentOptionKey, r, nextobs, nexta)
     
     def episode_finished(self):
         """ Reset options in addition to resetting self """
-        o.episode_finished() for o in self.options
+        for opt in self.options:
+            opt.episode_finished()
         return super(OptionAgent, self).episode_finished()
 
 # from pylov.agent import OptionAgent, Option

@@ -52,6 +52,8 @@ class SarsaAgent(Agent):
             learner is learning algorithm?
             epsilon is for epsilon exploration
         """
+        if type(actionDesc) == int:
+            actionDesc = (actionDesc,)
         Agent.__init__(self)
         self.stateDesc = stateDesc
         self.stateNum = len(self.stateDesc)
@@ -95,7 +97,7 @@ class SarsaAgent(Agent):
         if nexta == None:
             nexta = self.choose_action(None, nextobs)
             self.nextAction = nexta
-            nexta = tuple(nexta)
+            #nexta = tuple(nexta)
         
         # obs = tuple(int(x) for x in obs)[0:len(self.stateDesc)]
         # a = tuple(int(x) for x in a)[0:len(self.actionDesc)]
@@ -104,7 +106,7 @@ class SarsaAgent(Agent):
         obs = obs[0:self.stateNum]
         a = tuple(a[0:self.actionNum])
         nextobs = nextobs[0:self.stateNum]
-        nexta = nexta[0:self.actionNum]
+        nexta = tuple(nexta[0:self.actionNum])
         
         sa = obs+a
         q = self.qTable[sa]
