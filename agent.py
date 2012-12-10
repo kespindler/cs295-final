@@ -46,11 +46,12 @@ class SarsaAgent(Agent):
     """ Standard agent that learns with SARSA(lambda)
     """
     def __init__(self, stateDesc, actionDesc, 
-                    alpha = 0.1, gamma = 0.99, slambda = 0.9, epsilon = 0.01, traceThreshold = 0.0001):
+                    alpha = 0.1, gamma = 0.99, slambda = 0.9, epsilon = 0.01, decay = 0.99
+                    traceThreshold = 0.0001):
         """ stateDesc gives size of state space (if state space is d-dim, stateDesc is tuple of length d)
             actionDesc gives size of actions space (sized similarly to stateDesc)
             learner is learning algorithm?
-            epsilon is for epsilon exploration
+            epsilon is for epsilon exploration, decay is exploration decay rate
         """
         if type(actionDesc) is int:
             actionDesc = (actionDesc,)
@@ -64,6 +65,7 @@ class SarsaAgent(Agent):
         self.gamma = gamma
         self.slambda = slambda
         self.epsilon = epsilon
+        self.decay = decay
         self.traceThreshold = 0.0001
         # observations stores history of SARSA feedback
         self.observations = [[], []]
@@ -87,7 +89,9 @@ class SarsaAgent(Agent):
                 # totally random
                 i = array(tuple(randint(0, x-1) for x in self.actionDesc))
         
+        # cleanup
         self.nextAction = None
+        self.epsilon *= self.decay
         return i
     
     def feedback(self, obs, a, r, nextobs, nexta = None):
