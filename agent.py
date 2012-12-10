@@ -2,6 +2,7 @@ from abc import ABCMeta, abstractmethod
 from random import random, choice, randint, shuffle
 from numpy import array, zeros, ones, append, argmax, unravel_index, where
 from options2 import KeyOption, LockOption, DoorOption
+from math import isnan
 
 """ Default agent super class
     SARSA(lambda) and Random implementations
@@ -115,7 +116,8 @@ class SarsaAgent(Agent):
         # update current qvalue for s,a in table
         delta = r + self.gamma * qnext - q
         newq = q + self.alpha * delta
-        self.qTable[sa] = newq
+        if not isnan(newq):
+            self.qTable[sa] = newq
         
         # compute backup
         prevs = self.observations[0]
@@ -131,7 +133,8 @@ class SarsaAgent(Agent):
             
             sa = state + action
             newq = self.qTable[sa] + self.alpha * delta * eligibility
-            self.qTable[sa] = newq
+            if not isnan(newq):
+                self.qTable[sa] = newq
             
             # decay trace, and terminate if trace is negligible
             eligibility *= self.slambda

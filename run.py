@@ -18,5 +18,6 @@ env = Lightworld(*rooms_from_fpath('basic_lightworld.txt'))
 # agent = OptionAgent(stateDesc, actionDesc)
 agent = RLSSarsaAgent(agentSpaceDim, problemSpaceDim, actionDesc[0])
 rend = PygameRenderer(env)
+# rend = None
 
-run_experiment(env, agent, rend)
+run_experiment(env, agent, rend, outfpath = 'optionagent.txt')
