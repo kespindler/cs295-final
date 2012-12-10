@@ -10,7 +10,7 @@ class RLSSarsaAgent(Agent):
     """
     
     def __init__(self, stateDim, stateOffset, actionDesc,
-                alpha = 0.1, gamma = 0.99, slambda = 0.9, epsilon = 0.01):
+        gamma = 0.99, slambda = 0.9, epsilon = 0.01, decay = 0.99):
         super(RLSSarsaAgent, self).__init__()
         self.stateDim = stateDim
         self.stateOffset = stateOffset
@@ -19,6 +19,7 @@ class RLSSarsaAgent(Agent):
         self.gamma = gamma
         self.slambda = slambda
         self.epsilon = epsilon
+        self.decay = decay
         
         # init for rls-sarsa
         self.porder = 2

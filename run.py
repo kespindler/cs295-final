@@ -14,8 +14,8 @@ import multiprocessing as mp
 
 problemSpaceDim = 5
 #agentSpaceDim = 12
+actionDesc = (6,)
 
-#rooms = gen_world()
 folder = 'lightworlds'
 worldfnames = [os.path.join(folder, f) for f in os.listdir(folder)]
 
