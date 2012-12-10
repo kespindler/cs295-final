@@ -1,7 +1,7 @@
 from numpy import array
 from environment import Lightworld
 from lightworld_gen import gen_world
-from agent import StandardAgent, RandomAgent
+from agent import SarsaAgent, RandomAgent
 from pygamerenderer import PygameRenderer
 from utility import run_experiment
 

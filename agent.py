@@ -52,7 +52,7 @@ class SarsaAgent(Agent):
             learner is learning algorithm?
             epsilon is for epsilon exploration
         """
-        super(StandardAgent, self).__init__()
+        Agent.__init__(self)
         self.stateDesc = stateDesc
         self.stateNum = len(self.stateDesc)
         self.actionDesc = actionDesc
@@ -68,7 +68,7 @@ class SarsaAgent(Agent):
         self.nextAction = None # ensures proper SARSA updates
     
     def choose_action(self, env, obs):
-        super(StandardAgent, self).choose_action(env, obs)
+        Agent.choose_action(self, env, obs)
         # obs = tuple(int(x) for x in obs)[0:len(self.stateDesc)]
         obs = obs[0:self.stateNum]
         i = self.nextAction
@@ -145,7 +145,7 @@ class SarsaAgent(Agent):
         """
         self.observations = [[], []]
         self.nextAction = None
-        return super(StandardAgent,self).episode_finished()
+        return Agent.episode_finished(self)
 
 
 class RandomAgent(Agent):
