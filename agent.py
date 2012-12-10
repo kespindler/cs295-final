@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from random import random, choice, randint
+from random import random, choice, randint, shuffle
 from numpy import array, zeros, ones, append, argmax, unravel_index, where
 from options2 import KeyOption, LockOption, DoorOption
 
@@ -153,7 +153,7 @@ class RandomAgent(Agent):
         pass
 
 
-class TestOptionAgent(Agent):
+class PerfectOptionAgent(Agent):
     def __init__(self):
         Agent.__init__(self)
         self.options = [KeyOption(), LockOption(), DoorOption()]
@@ -161,6 +161,7 @@ class TestOptionAgent(Agent):
 
     def choose_action(self, env, state):
         if self.option is None or self.option.is_terminated(env, state):
+            shuffle(self.options)
             for opt in self.options:
                 print opt
                 if opt.can_initiate(env, state):

@@ -36,15 +36,15 @@ def test_env(cls_agent):
     lightworld = Lightworld(*rooms_from_fpath('basic_lightworld.txt'))
     agent = cls_agent()
     rend = PygameRenderer(lightworld)
-    run_experiment(lightworld, agent, rend)
+    run_experiment(lightworld, agent, rend, delay=.5)
 
 def test_env1():
     from agent import RandomAgent
     test_env(RandomAgent)
 
 def test_env2():
-    from agent import TestOptionAgent
-    test_env(TestOptionAgent)
+    from agent import PerfectOptionAgent
+    test_env(PerfectOptionAgent)
 
 if __name__ == "__main__":
     test_env2()
