@@ -70,7 +70,7 @@ class OptionAgent(SarsaAgent):
             # Check that option is initializable
             if not self.currentOption.canInitialize(obs):
                 # if it is not set its qvalue so it is never picked again
-                self.qTable[obs + tuple(next)] = float("-inf")
+                self.qTable[obs[:self.stateDim] + tuple(next)] = float("-inf")
                 next = None
                 self.currentOptionKey = None
                 self.currentOption = None
