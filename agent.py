@@ -46,9 +46,9 @@ class Agent(object):
 class SarsaAgent(Agent):
     """ Standard agent that learns with SARSA(lambda)
     """
-    def __init__(self, stateDesc, actionDesc, 
-                    alpha = 0.1, gamma = 0.99, slambda = 0.9, epsilon = 0.01, decay = 0.99
-                    traceThreshold = 0.0001):
+    def __init__(self, stateDesc, actionDesc, alpha = 0.1, 
+            gamma = 0.99, slambda = 0.9, epsilon = 0.01, 
+            decay = 0.99, traceThreshold = 0.0001):
         """ stateDesc gives size of state space (if state space is d-dim, stateDesc is tuple of length d)
             actionDesc gives size of actions space (sized similarly to stateDesc)
             learner is learning algorithm?

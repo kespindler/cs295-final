@@ -12,9 +12,10 @@ def enum(*sequential,**named):
     s.__getitem__ = lambda self, i: enums.values()[i]
     return s()
 
-def run_experiment(env, agent, rend = None, steps = None, delay = 0, outfpath = None):
+def run_experiment(env, agent, rend = None, episodes = None, delay = 0, outfpath = None):
     i = 0
     last = 0
+    episode_lengths = []
     def run_interaction(state, render=False):
         action = agent.choose_action(env, state)
         state2, reward = env.perform_action(state, action)
@@ -29,18 +30,16 @@ def run_experiment(env, agent, rend = None, steps = None, delay = 0, outfpath = 
 
     current_state = env.new_state()
     while 1:
-        if steps is not None:
-            if steps <= 0:
-                break
-            else:
-                steps -= 1
-
         current_state = run_interaction(current_state, True)
         if env.episode_finished(current_state):
             agent.episode_finished()
+            steps_taken = i - last
             if outfpath:
                 with open(outfpath, 'a') as f:
-                    f.write(str(i - last) + '\n')
+                    f.write(str(steps_taken) + '\n')
+            episode_lengths.append(steps_taken)
+            if episodes is not None and len(episode_lengths) == episodes:
+                break
             env.restart_episode()
             current_state = env.new_state()
             last = i
@@ -51,6 +50,7 @@ def run_experiment(env, agent, rend = None, steps = None, delay = 0, outfpath = 
         i += 1
         if i % 100 == 0:
             print i
+    return episode_lengths
 
 def uniform_arr(*strings):
     maxh = max(max(len(l) for l in string) for string in strings)

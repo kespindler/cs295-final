@@ -1,21 +1,53 @@
-from numpy import array
+import numpy as np
 from environment import Lightworld
 from lightworld_gen import gen_world
 from agent import SarsaAgent, RandomAgent
 from options import OptionAgent
-from pygamerenderer import PygameRenderer
+try:
+    from pygamerenderer import PygameRenderer
+except:
+    pass
 from utility import rooms_from_fpath, run_experiment
+import os
+import matplotlib.pyplot as plt
+import multiprocessing as mp
 
 problemSpaceDim = 5
 #agentSpaceDim = 12
 
-rooms = gen_world()
-env = Lightworld(*[room for iskey, room in rooms])
-env = Lightworld(*rooms_from_fpath('basic_lightworld.txt'))
-stateDesc = env.dimensions()[0:problemSpaceDim]
-actionDesc = (6,)
-agent = OptionAgent(stateDesc, actionDesc)
-#rend = PygameRenderer(env)
-rend = None
+#rooms = gen_world()
+folder = 'lightworlds'
+worldfnames = [os.path.join(folder, f) for f in os.listdir(folder)]
 
-run_experiment(env, agent, rend, outfpath = 'optionagent.txt')
+N_DUPS = 1 #10
+N_EPISODES = 30
+worldfnames = worldfnames[:5] # dont' do this
+#results = np.zeros((N_DUPS * len(worldfnames),N_EPISODES))
+#i = 0
+#lock = mp.Lock()
+q = mp.Queue()
+
+def run_iteration(lightworldfname):
+    print 'Begin lightworld', lightworldfname
+    env = Lightworld(*rooms_from_fpath(lightworldfname))
+    stateDesc = env.dimensions()[0:problemSpaceDim]
+    actionDesc = (6,)
+    agent = SarsaAgent(stateDesc, actionDesc)
+    #rend = PygameRenderer(env)
+    rend = None
+    episode_lengths = run_experiment(env, agent, rend, episodes = N_EPISODES)
+    q.put(episode_lengths)
+
+lightworldfpaths = [f for f in worldfnames for _ in range(N_DUPS)]
+pool = mp.Pool(8)
+pool.map(run_iteration, lightworldfpaths)
+
+resultarr = np.zeros((N_DUPS * len(worldfnames),N_EPISODES))
+i = 0
+while not q.empty():
+    resultarr[i,:] = q.get()
+    i += 1
+
+means = resultarr.mean(0)
+plt.plot(means)
+plt.savefig('out.png')
