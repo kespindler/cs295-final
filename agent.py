@@ -80,7 +80,7 @@ class SarsaAgent(Agent):
     def choose_action(self, env, obs):
         Agent.choose_action(self, env, obs)
         # obs = tuple(int(x) for x in obs)[0:len(self.stateDesc)]
-        obs = obs[0:self.stateDim]
+        obs = obs[:self.stateDim]
         i = self.nextAction
         if i is None:
             # Get subtable of actions at given state
@@ -109,10 +109,10 @@ class SarsaAgent(Agent):
             self.nextAction = nexta
             #nexta = tuple(nexta)
         
-        obs = obs[0:self.stateDim]
-        a = tuple(a[0:self.actionDim])
-        nextobs = nextobs[0:self.stateDim]
-        nexta = tuple(nexta[0:self.actionDim])
+        obs = obs[:self.stateDim]
+        a = tuple(a[:self.actionDim])
+        nextobs = nextobs[:self.stateDim]
+        nexta = tuple(nexta[:self.actionDim])
         
         sa = obs+a
         q = self.qTable[sa]
@@ -189,9 +189,10 @@ class PerfectOptionAgent(SarsaAgent):
                 if not self.option.can_initiate(env, state):
                     self.qTable[state[:self.dims]+(opti,)] = float('-inf')
                     self.option = None
-                else:
-                    pass
-                    #print 'started option', self.option
+                assert not np.all(np.isinf(self.qTable[state[:self.dims]])), (self, state)
+                #else:
+                #    pass
+                #    #print 'started option', self.option
         return self.option.choose_action(env, state)
         #    #return np.array([choice(env.actions)])
         #else:

@@ -37,6 +37,7 @@ def run_iteration(lightworldfname):
     episode_lengths = run_experiment(env, agent, rend, episodes = N_EPISODES)
     q.put(episode_lengths)
 
+run_iteration(worldfnames[0])
 lightworldfpaths = [f for f in worldfnames for _ in range(N_DUPS)]
 pool = mp.Pool(8)
 pool.map(run_iteration, lightworldfpaths)
