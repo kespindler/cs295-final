@@ -89,8 +89,10 @@ class SarsaAgent(Agent):
             # Choose randomly or greedily?
             if random() > self.epsilon:
                 # Greedily choose max; if tie, break randomly
+                print availableActions
                 i = np.where(availableActions == availableActions.max())
                 i = np.array(choice(zip(*i)))
+                print(i)
             else:
                 # totally random
                 i = np.array(tuple(randint(0, x-1) for x in self.actionDesc))

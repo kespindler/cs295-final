@@ -1,7 +1,7 @@
 import numpy as np
 from environment import Lightworld
 from lightworld_gen import gen_world
-from agent import SarsaAgent, RandomAgent
+from agent import SarsaAgent, RandomAgent, PerfectOptionAgent
 from options import OptionAgent
 try:
     from pygamerenderer import PygameRenderer
@@ -9,7 +9,10 @@ except:
     pass
 from utility import rooms_from_fpath, run_experiment
 import os
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt
+except:
+    pass
 import multiprocessing as mp
 import cProfile
 
@@ -32,9 +35,11 @@ def run_iteration(lightworldfname):
     env = Lightworld(*rooms_from_fpath(lightworldfname))
     stateDesc = env.dimensions()[0:problemSpaceDim]
     actionDesc = (6,)
-    agent = SarsaAgent(stateDesc, actionDesc)
-    #rend = PygameRenderer(env)
-    rend = None
+    agent = PerfectOptionAgent(stateDesc, actionDesc)
+    try:
+        rend = PygameRenderer(env)
+    except:
+        rend = None
     episode_lengths = run_experiment(env, agent, rend, episodes = N_EPISODES)
     #q.put(episode_lengths)
 
