@@ -68,7 +68,7 @@ class GradientDescentSarsaAgent(Agent):
         print(i)
         return i
     
-    def feedback(self, obs, a, r, nextobs, nexta = None):
+    def feedback(self, obs, a, r, nextobs, nexta = None, env=None):
         if nexta == None:
             nexta = self.choose_action(None, nextobs)
             self.nextAction = nexta

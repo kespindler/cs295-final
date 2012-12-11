@@ -19,7 +19,7 @@ def run_experiment(env, agent, rend = None, episodes = None, delay = 0, outfpath
     def run_interaction(state, render=False):
         action = agent.choose_action(env, state)
         state2, reward = env.perform_action(state, action)
-        agent.feedback(state, action, reward, state2)
+        agent.feedback(state, action, reward, state2, env=env)
         if render and rend is not None:
             rend.update(state2)
         return state2
@@ -31,6 +31,7 @@ def run_experiment(env, agent, rend = None, episodes = None, delay = 0, outfpath
     current_state = env.new_state()
     while 1:
         current_state = run_interaction(current_state, True)
+        #print current_state
         if env.episode_finished(current_state):
             agent.episode_finished()
             steps_taken = i - last

@@ -69,7 +69,7 @@ class RLSSarsaAgent(Agent):
         print(i)
         return i
     
-    def feedback(self, obs, a, r, nextobs, nexta = None):
+    def feedback(self, obs, a, r, nextobs, nexta = None, env=None):
         """ Update epsilon, B, b, and weights
         """
         if nexta == None:
