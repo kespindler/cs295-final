@@ -3,6 +3,7 @@ from environment import Lightworld
 from lightworld_gen import gen_world
 from agent import SarsaAgent, RandomAgent, PerfectOptionAgent
 from options import OptionAgent
+from agent_options import COptionAgent
 try:
     from pygamerenderer import PygameRenderer
 except:
@@ -13,7 +14,7 @@ import matplotlib.pyplot as plt
 import multiprocessing as mp
 
 problemSpaceDim = 5
-#agentSpaceDim = 12
+agentSpaceDim = 12
 actionDesc = (6,)
 
 folder = 'lightworlds'
@@ -29,12 +30,14 @@ q = mp.Queue()
 def run_iteration(lightworldfname):
     print 'Begin lightworld', lightworldfname
     env = Lightworld(*rooms_from_fpath(lightworldfname))
+    Cenv = Lightworld(*rooms_from_fpath('basic_lightworld.txt'))
     stateDesc = env.dimensions()[0:problemSpaceDim]
     actionDesc = (6,)
-    agent = PerfectOptionAgent(stateDesc)
+    agent = COptionAgent(stateDesc, problemSpaceDim, actionDesc)
+    # agent = PerfectOptionAgent(stateDesc)
     #rend = PygameRenderer(env)
     rend = None
-    episode_lengths = run_experiment(env, agent, rend, episodes = N_EPISODES)
+    episode_lengths = run_experiment(env, agent, rend, episodes = N_EPISODES, Cenv)
     q.put(episode_lengths)
 
 run_iteration(worldfnames[0])

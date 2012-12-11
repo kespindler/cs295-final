@@ -48,7 +48,7 @@ def run_experiment(env, agent, rend = None, episodes = None, agent_env = None de
             current_state = env.new_state()
             last = i
 
-        if delay > 0:
+        if delay > 0: 
             sleep(delay)
 
         i += 1
