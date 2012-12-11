@@ -41,6 +41,9 @@ class Lightworld(Environment):
     final_reward = 1000
     task_reward = -1
 
+    #def item_there(self, loclist, field):
+    #    return loclist and (self.states[loclist[0]] == field)
+
     def set_room(self, room):
         assert 0 <= room < len(self.rooms)
         self.room = room
@@ -48,6 +51,8 @@ class Lightworld(Environment):
         self.states = roomarr.copy()
         self.goal = filter_states(self.states, self.field.DOOR)[0]
         self.initPos = filter_states(self.states, self.field.INIT)
+        self.lock_pos = filter_states(self.states, self.field.LOCK)
+        self.key_pos = filter_states(self.states, self.field.KEY)
         self.agent_holding_key = False
 
     def __init__(self, *rooms):
@@ -73,10 +78,11 @@ class Lightworld(Environment):
         r = self.room
         x,y = pos
         h = 1 if self.agent_holding_key else 0
-        l = 1 if filter_states(self.states, self.field.DOOR) else 0
+        l = 1 if self.states[self.goal] == self.field.DOOR else 0
         next_posns = [tuple(map(sum, zip(pos, dir))) for dir in Lightworld.movemap.values()]
-        field_locs = [filter_states(self.states, field) for field in [self.field.DOOR, self.field.KEY, self.field.LOCK]]
+        #field_locs = [filter_states(self.states, field) for field in [self.field.DOOR, self.field.KEY, self.field.LOCK]]
         #rgbs = []
+        field_locs = [[self.goal], self.key_pos, self.lock_pos]
 	rgbs = [(0 if not fieldpos else max(0, 1. - manhattan_dist(pos, fieldpos[0])/20.)) for fieldpos in field_locs for pos in next_posns]
         #for dir in Lightworld.movemap.values():
         #    #pos2 = tuple(map(sum, zip(pos, dir)))
@@ -89,8 +95,8 @@ class Lightworld(Environment):
         return state
 
     def new_state(self):
-        pos = choice(filter_states(self.states, self.field.INIT))
-        return self.calculate_state(pos)
+        #pos = choice(filter_states(self.states, self.field.INIT))
+        return self.calculate_state(choice(self.initPos))
 
     def restart_episode(self):
         self.set_room(0)
@@ -124,6 +130,7 @@ class Lightworld(Environment):
             if (self.states[pos2] == self.field.LOCK and
                     not filter_states(self.states, self.field.KEY)):
                 self.agent_holding_key = False
-                self.states[self.states == self.field.DOOR] = self.field.EMPTY
+                self.states[self.goal] = self.field.EMPTY
+                #self.states[self.states == self.field.DOOR] = self.field.EMPTY
                 reward = self.task_reward
         return (self.calculate_state(pos2), reward)
