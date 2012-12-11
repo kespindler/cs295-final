@@ -114,6 +114,8 @@ class OptionAgent(SarsaAgent):
         """
         for opt in self.options:
             opt.episode_finished()
+        self.currentOption = None
+        self.currentOptionKey = None
         return super(OptionAgent, self).episode_finished()
 
 # from pylov.agent import OptionAgent, Option
