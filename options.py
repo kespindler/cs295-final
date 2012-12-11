@@ -41,7 +41,7 @@ class DoorOption(Option):
 
 class OptionAgent(SarsaAgent):
     optionReward = 100 # shaped reward given to option
-    optionEnum = enum(KEY=1, LOCK=2, DOOR=3)
+    optionEnum = enum(KEY=0, LOCK=1, DOOR=2)
     
     def __init__(self, stateDesc, actionDesc):
         self.options = [
@@ -59,7 +59,7 @@ class OptionAgent(SarsaAgent):
             Then choose action from option
             Note - step count returned
         """
-        
+        o = obs[:self.stateDim]
         # Check if option has terminated
         if (self.currentOption is not None 
             and self.currentOption.canTerminate(obs)):
@@ -69,11 +69,11 @@ class OptionAgent(SarsaAgent):
         # choose option
         while self.currentOption is None:
             self.currentOptionKey = super(OptionAgent, self).choose_action(env, obs)
-            self.currentOption = self.options[next]
+            self.currentOption = self.options[self.currentOptionKey]
             # Check that option is initializable
             if not self.currentOption.canInitialize(obs):
                 # if it is not set its qvalue so it is never picked again
-                self.qTable[obs + tuple(next)] = float("-inf")
+                self.qTable[o + tuple(self.currentOptionKey)] = float("-inf")
                 self.currentOptionKey = None
                 self.currentOption = None
         
@@ -84,18 +84,16 @@ class OptionAgent(SarsaAgent):
         """ Shape reward based on current option
         """
         optr = -1 # default step cost
-        if self.currentOptionKey == optionEnum.KEY:
-            if obs[3] == 0 and nextobs[3] == 1:
-                optr = optionReward
-            # check if key has been picked up
-        elif self.currentOptionKey == optionEnum.LOCK:
-            # check if door is unlocked
-            if obs[4] == 0 and nextobs[4] == 1:
-                optr = optionReward
-        elif self.currentOptionKey == optionEnum.DOOR:
-            # check if room has changed
-            if obs[0] != nextobs[0]:
-                optr = optionReward
+        
+        # check if key is picked up
+        if obs.h == 0 and nextobs.h == 1 and self.currentOptionKey == OptionAgent.optionEnum.KEY:
+            optr = OptionAgent.optionReward
+        # check if door is unlocked
+        elif obs.l == 1 and nextobs.l == 0 and self.currentOptionKey == OptionAgent.optionEnum.LOCK:
+            optr = OptionAgent.optionReward
+        # check if room has changed
+        elif obs.r != nextobs.r and self.currentOptionKey == OptionAgent.optionEnum.DOOR:
+            optr = OptionAgent.optionReward
         
         return optr
         
