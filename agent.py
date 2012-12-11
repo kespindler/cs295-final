@@ -180,10 +180,10 @@ class RandomAgent(Agent):
 #------------------------------------------
 
 class PerfectOptionAgent(SarsaAgent):
-    def __init__(self, state_desc):
-        self.options = [KeyOption(), LockOption(), DoorOption()]
+    def __init__(self, state_desc, action_desc):
+        self.options = [DoorOption(), KeyOption(), LockOption()]
         SarsaAgent.__init__(self, state_desc, (len(self.options),))
-        self.dims = len(state_desc)  # dims in state vector that we care about
+        self.stateDim = len(state_desc)  # dims in state vector that we care about
         self.option = None
 
     def choose_action(self, env, state):
@@ -193,10 +193,10 @@ class PerfectOptionAgent(SarsaAgent):
                 opti = SarsaAgent.choose_action(self, env, state)[0]
                 self.option = self.options[opti]
                 if not self.option.can_initiate(env, state):
-                    self.qTable[state[:self.dims]+(opti,)] = float('-inf')
+                    self.qTable[state[:self.stateDim]+(opti,)] = float('-inf')
                     self.option = None
                 #print zip(*np.where(np.isinf(self.qTable)))
-                assert not np.all(np.isinf(self.qTable[state[:self.dims]])), (self, state)
+                assert not np.all(np.isinf(self.qTable[state[:self.stateDim]])), (self, state)
                 #else:
                 #    pass
                 #    #print 'started option', self.option
