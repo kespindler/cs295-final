@@ -1,29 +1,37 @@
-class GradientDescentSarsaAgent:
-	""" Sarsa(lambda) using gradient descent (function approximation)
-	"""
-	
-	def __init__(self, stateDim, stateOffset, actionDesc,
-				alpha = 0.01, gamma = 0.99, slambda = 0.9, epsilon = 0.01, decay = 0.99, traceThreshold = 0.0001):
-		super(GradientDescentSarsaAgent, self).__init__()
-		self.stateDim = stateDim
-		self.stateOffset = stateOffset
-		self.actionNum = actionDesc # let's just assume this is an int for now
-		self.alpha = alpha
-		self.gamma = gamma
-		self.slambda = slambda
-		self.epsilon = epsilon
-		self.decay = decay
-		self.traceThreshold = traceThreshold
-		
-		# init for FA
-        self.porder = 2
-		self.actionFeatures = self.stateDim * self.porder
+from agent import Agent
+from numpy import array, zeros, dot
+from numpy.random import rand
+from random import choice, random, randint
+
+class GradientDescentSarsaAgent(Agent):
+    """ Sarsa(lambda) using gradient descent (function approximation)
+    """
+    
+    def __init__(self, stateDim, stateOffset, actionDesc,
+                alpha = 0.1, gamma = 0.99, slambda = 0.9, epsilon = 0.01, decay = 0.99, traceThreshold = 0.0001):
+        super(GradientDescentSarsaAgent, self).__init__()
+        self.stateDim = stateDim
+        self.stateOffset = stateOffset
+        self.actionNum = actionDesc # let's just assume this is an int for now
+        self.alpha = alpha
+        self.gamma = gamma
+        self.slambda = slambda
+        self.epsilon = epsilon
+        self.decay = decay
+        self.traceThreshold = traceThreshold
+        
+        # init for FA
+        self.porder = 1
+        self.actionFeatures = self.stateDim * self.porder
         self.featureNum = self.actionFeatures * self.actionNum + 1
         self.delta = 0.0001
-		
-		self.weights = rand(self.featureNum,1)
-		self.eligibility = zeros((self.featureNum,1))
-	
+        
+        self.weights = zeros((self.featureNum,1))
+        self.weights[0] = 1
+        self.eligibility = zeros((self.featureNum,1))
+        
+        self.nextAction = None
+    
     def choose_action(self, env, obs):
         """ Evaluate function using current weights for all actions
             Pick max to find next action
@@ -59,36 +67,36 @@ class GradientDescentSarsaAgent:
         
         print(i)
         return i
-	
-	def feedback(self, obs, a, r, nextobs, nexta):
+    
+    def feedback(self, obs, a, r, nextobs, nexta = None):
         if nexta == None:
             nexta = self.choose_action(None, nextobs)
             self.nextAction = nexta
-		
+        
         obs = obs[self.stateOffset:(self.stateOffset+self.stateDim)]
         a = a[0]
         nextobs = nextobs[self.stateOffset:(self.stateOffset+self.stateDim)]
         nexta = nexta[0]
-		
-		feat = self.poly_basis(obs,a)
-		q = dot(self.weights.transpose(), feat)
-		nextfeat = self.poly_basis(nextobs,nexta)
-		nextq = dot(self.weights.transpose(), nextfeat)
-		
-		delta = r + self.gamma * nextq - q
-		self.eligibility *= self.gamma * self.slambda
-		self.eligibility += feat
-		self.weights += self.alpha * delta * self.eligibility
-		
-		return
-	
-	def poly_basis(self, obs, a):
-		vec = array([v] for v in obs)
-		feat = zeros((self.featureNum,1))
-		feat[0] = 1 # constant term
-		featSize = self.stateDim
-		actionOffset = self.actionFeatures * a + 1
-		for i in range(1,self.porder+1):
-			feat[((i-1)*featSize+actionOffset):(i*featSize+actionOffset)] = vec ** i
-		
-		return feat
+        
+        feat = self.poly_basis(obs,a)
+        q = dot(self.weights.transpose(), feat)
+        nextfeat = self.poly_basis(nextobs,nexta)
+        nextq = dot(self.weights.transpose(), nextfeat)
+        
+        delta = r + self.gamma * nextq - q
+        self.eligibility *= self.gamma * self.slambda
+        self.eligibility += feat
+        self.weights += self.alpha * delta * self.eligibility
+        
+        return
+    
+    def poly_basis(self, obs, a):
+        vec = array([[v] for v in obs])
+        feat = zeros((self.featureNum,1))
+        feat[0] = 1 # constant term
+        featSize = self.stateDim
+        actionOffset = self.actionFeatures * a + 1
+        for i in range(1,self.porder+1):
+            feat[((i-1)*featSize+actionOffset):(i*featSize+actionOffset)] = vec ** i
+        
+        return feat

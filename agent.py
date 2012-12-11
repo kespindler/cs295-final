@@ -116,7 +116,7 @@ class SarsaAgent(Agent):
         
         sa = obs+a
         q = self.qTable[sa]
-	if not isinf(q):
+        if not isinf(q):
             qnext = self.qTable[nextobs+nexta]
             
             # update current qvalue for s,a in table
@@ -139,7 +139,7 @@ class SarsaAgent(Agent):
                 
                 sa = state + action
                 #newq = self.qTable[sa] + factor * eligibility
-	        self.qTable[sa] += factor * elig
+                self.qTable[sa] += factor * elig
                 
                 # decay trace, and terminate if trace is negligible
                 #eligibility *= self.slambda
