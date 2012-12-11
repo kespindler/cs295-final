@@ -77,7 +77,7 @@ class Lightworld(Environment):
         next_posns = [tuple(map(sum, zip(pos, dir))) for dir in Lightworld.movemap.values()]
         field_locs = [filter_states(self.states, field) for field in [self.field.DOOR, self.field.KEY, self.field.LOCK]]
         #rgbs = []
-	rgbs = [(0 if not fieldpos else max(0, 1. - manhattan_dist(pos, fieldpos[0])/20.)) for fieldpos in field_locs for pos in next_posns]
+	rgbs = [(0 if not fieldpos else max(0, 1. - manhattan_dist(pos, fieldpos[0])/20.)) for pos in next_posns for fieldpos in field_locs]
         #for dir in Lightworld.movemap.values():
         #    #pos2 = tuple(map(sum, zip(pos, dir)))
         #    # door, key, lock in rgb order
