@@ -85,13 +85,16 @@ class PygameRenderer(RenderEngine):
     #                    self.fill_triangle(i,j, max_val)
     #    self.screen.blit(self.goal_img, img_point(*self.maze.goal))
         
+    def fill_square(self, i, j):
+        self.screen.fill(LIGHTGREY, self.make_rect(i,j))
+
     def fill_grid(self):
         for i in range(self.maze.states.shape[0]):
             for j in range(self.maze.states.shape[1]):
                 if self.maze.states[i, j] == field.WALL:
                     self.screen.fill(GREEN, self.make_rect(i,j))
                 else:
-                    self.screen.fill(LIGHTGREY, self.make_rect(i,j))
+                    self.fill_square(self, i, j)
                     if self.maze.states[i,j] == field.KEY:
                         self.screen.blit(self.key_img, img_point(i,j))
                     elif self.maze.states[i,j] == field.DOOR:
