@@ -74,14 +74,17 @@ class Lightworld(Environment):
         x,y = pos
         h = 1 if self.agent_holding_key else 0
         l = 1 if filter_states(self.states, self.field.DOOR) else 0
-        rgbs = []
-        for dir in Lightworld.movemap.values():
-            pos2 = tuple(map(sum, zip(pos, dir)))
-            # door, key, lock in rgb order
-            for field in [self.field.DOOR, self.field.KEY, self.field.LOCK]:
-                fields = filter_states(self.states, field)
-                rgbs.append(0 if not fields else 
-                        max(0, 1. - manhattan_dist(pos, fields[0])/20.))
+        next_posns = [tuple(map(sum, zip(pos, dir))) for dir in Lightworld.movemap.values()]
+        field_locs = [filter_states(self.states, field) for field in [self.field.DOOR, self.field.KEY, self.field.LOCK]]
+        #rgbs = []
+	rgbs = [(0 if not fieldpos else max(0, 1. - manhattan_dist(pos, fieldpos[0])/20.)) for fieldpos in field_locs for pos in next_posns]
+        #for dir in Lightworld.movemap.values():
+        #    #pos2 = tuple(map(sum, zip(pos, dir)))
+        #    # door, key, lock in rgb order
+        #    for field in [self.field.DOOR, self.field.KEY, self.field.LOCK]:
+        #        fields = filter_states(self.states, field)
+        #        rgbs.append(0 if not fields else 
+        #                max(0, 1. - manhattan_dist(pos, fields[0])/20.))
         state = State(r,int(x),int(y),h,l,*rgbs)
         return state
 
