@@ -37,7 +37,7 @@ def test_env(cls_agent):
     probdim = 5
     agent = cls_agent(lightworld.dimensions()[:probdim])
     rend = PygameRenderer(lightworld)
-    run_experiment(lightworld, agent, rend, delay=.05)
+    run_experiment(lightworld, agent, rend)#, delay=.05)
 
 def test_env1():
     from agent import RandomAgent

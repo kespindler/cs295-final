@@ -116,8 +116,8 @@ class SarsaAgent(Agent):
         
         sa = obs+a
         q = self.qTable[sa]
-        if not isinf(q):
-            qnext = self.qTable[nextobs+nexta]
+        qnext = self.qTable[nextobs+nexta]
+        if not isinf(q) and not isinf(qnext):
             
             # update current qvalue for s,a in table
             delta = r + self.gamma * qnext - q
@@ -139,7 +139,10 @@ class SarsaAgent(Agent):
                 
                 sa = state + action
                 #newq = self.qTable[sa] + factor * eligibility
+                #print self.qTable[sa], factor*elig
+                #if not isinf(self.qTable[sa]):
                 self.qTable[sa] += factor * elig
+                #print zip(*np.where(np.isinf(self.qTable)))
                 
                 # decay trace, and terminate if trace is negligible
                 #eligibility *= self.slambda
@@ -171,6 +174,7 @@ class RandomAgent(Agent):
 
     def feedback(self, obs, action, reward, obs2): 
         pass
+
 #------------------------------------------
 
 class PerfectOptionAgent(SarsaAgent):
@@ -189,6 +193,7 @@ class PerfectOptionAgent(SarsaAgent):
                 if not self.option.can_initiate(env, state):
                     self.qTable[state[:self.dims]+(opti,)] = float('-inf')
                     self.option = None
+                #print zip(*np.where(np.isinf(self.qTable)))
                 assert not np.all(np.isinf(self.qTable[state[:self.dims]])), (self, state)
                 #else:
                 #    pass
