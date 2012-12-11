@@ -7,10 +7,10 @@ from random import choice, random, randint
 class GradientDescentSarsaAgent(Agent):
     """ Sarsa(lambda) using gradient descent (function approximation)
     """
-    
     def __init__(self, stateDim, stateOffset, actionDesc,
-                alpha = 0.002, gamma = 0.99, slambda = 0.1, epsilon = 0.5, decay = 0.995, traceThreshold = 0.0001):
+                alpha = 0.0000001, gamma = 0.99, slambda = 0, epsilon = 0.5, decay = 0.995, traceThreshold = 0.0001):
         super(GradientDescentSarsaAgent, self).__init__()
+        print(alpha)
         self.stateDim = stateDim
         self.stateOffset = stateOffset
         self.actionNum = actionDesc[0] # let's just assume this is an int for now
@@ -22,7 +22,7 @@ class GradientDescentSarsaAgent(Agent):
         self.traceThreshold = traceThreshold
         
         # init for FA
-        self.porder = 1
+        self.porder = 5
         self.featureNum = self.stateDim * self.porder + 1
         self.delta = 0.0001
         
@@ -59,7 +59,7 @@ class GradientDescentSarsaAgent(Agent):
         
         # loop over actions and find estimated Q value for each paired with obs
         for j in range(0, self.actionNum, 1):
-            feat = self.poly_basis(o)
+            feat = self.fourier_basis(o)
             estQ = dot(self.weights[j], feat)
             outputs.append(estQ)
                 
@@ -82,11 +82,11 @@ class GradientDescentSarsaAgent(Agent):
 
         nexta = nexta[0]
         
-        feat = self.poly_basis(obs)
+        feat = self.fourier_basis(obs)
+        nextfeat = self.fourier_basis(nextobs)
         aweights = self.weights[a]
         nextaweights = self.weights[nexta]
         q = dot(aweights, feat)
-        nextfeat = self.poly_basis(nextobs)
         nextq = dot(nextaweights, nextfeat)
         
         delta = r + self.gamma * nextq - q
@@ -111,10 +111,23 @@ class GradientDescentSarsaAgent(Agent):
     def fourier_basis(self, obs):
         """ Fourier basis, hardcoded to order 3 for now
         """
-        vec = [[cos(pi * v), cos(pi*2*v), cos(pi*3*v)] for v in obs]
+        vec = array(obs)
+        vec = vec * pi
+        vec = array([[cos(v), cos(2*v), cos(3*v), cos(4*v), cos(5*v)] for v in vec])
         feat = zeros((self.featureNum))
         feat[0] = 1
         for i in range(0,self.stateDim):
-            feat[3*i+1:3*(i+1)+1] = vec[i]
+            feat[self.porder*i+1:self.porder*(i+1)+1] = vec[i]
             
         return feat
+    
+    def full_fourier_basis(self, obs):
+        
+        
+        feat = zeros((self.featureNum))
+        return feat
+    
+    def full_fourier_coef(self):
+        nterms = (order+1)**self.stateDims
+        mult = zeros((nterms, self.stateDims))
+        return
