@@ -71,19 +71,19 @@ class PygameRenderer(RenderEngine):
                 FIELD_SIZE - 2 * SQUARE_MARGIN, 
                 FIELD_SIZE - 2 * SQUARE_MARGIN)
 
-    def fill_triangle(self, i, j, max_val):
-        rect = self.make_rect(i, j)
+    def fill_triangle(self, state, max_val):
+        rect = self.make_rect(state.x,state.y)
         center = (rect[0] + int((rect[2]/2)),
                   rect[1] + int((rect[3]/2)))
         point_list = [(rect[0] + rect[2]-1, rect[1]), 
                       (rect[0] + rect[2]-1, rect[1] + rect[3]-1), 
                       (rect[0], rect[1] + rect[3]-1),
                       (rect[0], rect[1])]
-        state = i * self.maze.states.shape[1] + j
-        #action_vals = self.agent.learner.module.getActionValues(state)
-        #for k, val in enumerate(action_vals): #4 directions, and their order is N E S W
-        #    color = tuple([max(0, int(val/max_val*0xff))]*3)
-        #    pygame.draw.polygon(self.screen, color, [point_list[k], center, point_list[(k+1)%4]])
+        #state = i * self.maze.states.shape[1] + j
+        action_vals = self.agent.qTable[state[:self.agent.stateDim]][:4]
+        for k, val in enumerate(action_vals): #4 directions, and their order is N E S W
+            color = tuple([max(0, int(val/max_val*0xff))]*3)
+            pygame.draw.polygon(self.screen, color, [point_list[k], center, point_list[(k+1)%4]])
 
     #def fill_grid(self):
     #    if self.agent is not None:
@@ -100,30 +100,22 @@ class PygameRenderer(RenderEngine):
     #    self.screen.blit(self.goal_img, img_point(*self.maze.goal))
         
     def fill_state(self, state):
-        if not (hasattr(self.agent, 'options') and hasattr(self.agent, 'qTable')):
-            self.screen.fill(LIGHTGREY, self.make_rect(state.x,state.y))
-        else:
+        if hasattr(self.agent, 'options') and hasattr(self.agent, 'qTable'):
             #door,key,lock
             #r,g,b
             qvals = self.agent.qTable[state[:self.agent.stateDim]]
-            #min = qvals.min()
-            #if float('-inf') < min < float('inf'):
-            #qvals += qvals.min() # everything is >= 0
-            ##qvals /= qvals.max() # normalized
-            #max = qvals.max()
-            #print max, qvals
-            #if float('-inf') < max < float('inf'):
-            #    qvals /= max
-            #print qvals
             qvals = norm(qvals)
             x,y,w,h = self.make_rect(state.x,state.y)
             w = w/3
-            #print qvals
             for v, c, i in zip(qvals, [RED, GREEN, BLUE], range(3)):
-                #v = 0 if float('-inf') < v < float('inf') else 
-                #print v, c, i
                 c = tuple(int(i * v) for i in c)
                 self.screen.fill(c, (x+i*w,y,w,h))
+        elif self.agent is not None:
+            # do triangle visu
+            max_val = int(1 + self.agent.qTable.max())
+            self.fill_triangle(state, max_val)
+        else:
+            self.screen.fill(LIGHTGREY, self.make_rect(state.x,state.y))
 
     def fill_grid(self,state):
         for i in range(self.maze.states.shape[0]):

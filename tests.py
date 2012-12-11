@@ -52,4 +52,4 @@ def test_env3():
     test_env(SarsaAgent)
 
 if __name__ == "__main__":
-    test_env2()
+    test_env3()
