@@ -171,30 +171,30 @@ class RandomAgent(Agent):
 
     def feedback(self, obs, action, reward, obs2): 
         pass
+#------------------------------------------
 
-
-class PerfectOptionAgent(Agent):
-    def __init__(self):
-        Agent.__init__(self)
+class PerfectOptionAgent(SarsaAgent):
+    def __init__(self, stateDesc):
         self.options = [KeyOption(), LockOption(), DoorOption()]
+        SarsaAgent.__init__(self, stateDesc, (len(self.options),))
         self.option = None
 
     def choose_action(self, env, state):
         if self.option is None or self.option.is_terminated(env, state):
-            shuffle(self.options)
-            for opt in self.options:
-                #print opt
-                if opt.can_initiate(env, state):
-                    print "Initiate option", opt
-                    self.option = opt
-                    break
-        if self.option is None:
-            return np.array([choice(env.actions)])
-        else:
-            return self.option.choose_action(env, state)
+            self.option = None
+            while self.option is None:
+                opti = SarsaAgent.choose_action(self, env, state)[0]
+                self.option = self.options[opti]
+                if not self.option.can_initiate(env, state):
+                    self.qTable[state+(opti,)] = float('-inf')
+                    self.option = None
+        return self.option.choose_action(env, state)
+        #    #return np.array([choice(env.actions)])
+        #else:
+        #    return self.option.choose_action(env, state)
 
-    def feedback(self, state, action, reward, state2, action2 = None):
-        pass
+    #def feedback(self, state, action, reward, state2, action2 = None):
+    #    SarsaAgent.
 
     def episode_finished(self):
         pass
