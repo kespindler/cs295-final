@@ -1,0 +1,2 @@
+Implementation of "George Konidaris and Andrew Barto. Building portable options: Skill transfer in reinforcement learning. In Proceedings of the 20th International Joint Conference on Artificial Intelligence, pages 895–900, 2007."
+Final project for CSCI2951-F, "Learning and Sequential Decision Making", taught by Michael Littman at Brown University.
