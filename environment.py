@@ -88,7 +88,7 @@ class Lightworld(Environment):
                      else cap_manhat_dist(pos, self.goal) for pos in next_posns]
         rgbs[1::3] = [cap_manhat_dist(pos, self.lock_pos) for pos in next_posns]
         rgbs[2::3] = [0 if (self.key_pos is None or self.states[self.key_pos] != Lightworld.field.KEY)
-                      else cap_manhat_dist(pos, self.lock_pos) for pos in next_posns]
+                      else cap_manhat_dist(pos, self.key_pos) for pos in next_posns]
         #for pos in next_posns:
         #    #pos2 = tuple(map(sum, zip(pos, dir)))
         #    # door, key, lock in rgb order
