@@ -19,12 +19,11 @@ actionDesc = (6,)
 folder = 'lightworlds'
 worldfnames = [os.path.join(folder, f) for f in os.listdir(folder)]
 
-N_DUPS = 10 #10
+N_DUPS = 10
+#N_DUPS = 10 #10
 N_EPISODES = 70
+#N_EPISODES = 1
 #worldfnames = worldfnames[:5] # dont' do this
-#results = np.zeros((N_DUPS * len(worldfnames),N_EPISODES))
-#i = 0
-#lock = mp.Lock()
 q = mp.Queue()
 
 def run_iteration(lightworldfname):
@@ -49,6 +48,6 @@ while not q.empty():
     i += 1
 
 means = resultarr.mean(0)
-np.savetxt('resultarr.csv', resultarr,delimiter=',')
+np.savetxt('sarsaagent.csv', resultarr,delimiter=',')
 plt.plot(means)
-plt.savefig('out.png')
+plt.savefig('sarsaagent.png')

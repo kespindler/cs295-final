@@ -51,7 +51,7 @@ class Lightworld(Environment):
         self.agent_holding_key = False
 
     def __init__(self, *rooms):
-        print rooms
+        #print rooms
         self.rooms = rooms
         self.set_room(0)
 

@@ -1,8 +1,9 @@
 from abc import ABCMeta, abstractmethod
 from random import random, choice, randint, shuffle
-from numpy import array, zeros, ones, append, argmax, unravel_index, where
+import numpy as np
 from options2 import KeyOption, LockOption, DoorOption
-from math import isnan
+from math import isinf
+from collections import deque
 
 """ Default agent super class
     SARSA(lambda) and Random implementations
@@ -61,15 +62,19 @@ class SarsaAgent(Agent):
         self.stateDim = len(self.stateDesc)
         self.actionDesc = actionDesc
         self.actionDim = len(self.actionDesc)
-        self.qTable = zeros(stateDesc + actionDesc)
+        self.qTable = np.zeros(stateDesc + actionDesc)
         self.alpha = alpha
         self.gamma = gamma
-        self.slambda = slambda
+        #self.slambda = slambda
+        hist_threshold = int(np.log(traceThreshold)/np.log(slambda))
+        self.eligibility = np.array([slambda**i for i in range(hist_threshold)])
         self.epsilon = epsilon
         self.decay = decay
-        self.traceThreshold = 0.0001
+        #self.traceThreshold = 0.0001
         # observations stores history of SARSA feedback
-        self.observations = [[], []]
+        #self.observations = [[], []]
+        self.prev_states = deque(maxlen=hist_threshold)
+        self.prev_actions = deque(maxlen=hist_threshold)
         self.nextAction = None # ensures proper SARSA updates
     
     def choose_action(self, env, obs):
@@ -84,11 +89,11 @@ class SarsaAgent(Agent):
             # Choose randomly or greedily?
             if random() > self.epsilon:
                 # Greedily choose max; if tie, break randomly
-                i = where(availableActions == availableActions.max())
-                i = array(choice(zip(*i)))
+                i = np.where(availableActions == availableActions.max())
+                i = np.array(choice(zip(*i)))
             else:
                 # totally random
-                i = array(tuple(randint(0, x-1) for x in self.actionDesc))
+                i = np.array(tuple(randint(0, x-1) for x in self.actionDesc))
         
         # cleanup
         self.nextAction = None
@@ -111,44 +116,48 @@ class SarsaAgent(Agent):
         
         sa = obs+a
         q = self.qTable[sa]
-        qnext = self.qTable[nextobs+nexta]
-        
-        # update current qvalue for s,a in table
-        delta = r + self.gamma * qnext - q
-        newq = q + self.alpha * delta
-        if not isnan(newq):
+	if not isinf(q):
+            qnext = self.qTable[nextobs+nexta]
+            
+            # update current qvalue for s,a in table
+            delta = r + self.gamma * qnext - q
+            newq = q + self.alpha * delta
             self.qTable[sa] = newq
-        
-        # compute backup
-        prevs = self.observations[0]
-        preva = self.observations[1]
-        
-        numSamples = len(prevs)
-        
-        # backup
-        eligibility = self.slambda
-        for i in range(numSamples-1, -1, -1):
-            state = prevs[i]
-            action = preva[i]
             
-            sa = state + action
-            newq = self.qTable[sa] + self.alpha * delta * eligibility
-            if not isnan(newq):
-                self.qTable[sa] = newq
+            # compute backup
+            #prevs = self.observations[0]
+            #preva = self.observations[1]
             
-            # decay trace, and terminate if trace is negligible
-            eligibility *= self.slambda
-            if eligibility < self.traceThreshold:
-                break
+            #lnumSamples = len(prevs)
+            
+            # backup
+            #eligibility = self.slambda
+            factor = self.alpha * delta
+            for state, action, elig in zip(self.prev_states, self.prev_actions, self.eligibility):
+                #state = prevs[i]
+                #action = preva[i]
+                
+                sa = state + action
+                #newq = self.qTable[sa] + factor * eligibility
+	        self.qTable[sa] += factor * elig
+                
+                # decay trace, and terminate if trace is negligible
+                #eligibility *= self.slambda
+                #if eligibility < self.traceThreshold:
+                #    break
         
         # add new observation
-        prevs.append(obs)
-        preva.append(a)
+        self.prev_states.appendleft(obs)
+        self.prev_actions.appendleft(a)
+        #prevs.append(obs)
+        #preva.append(a)
     
     def episode_finished(self):
         """ Erase history, but keep qvalues!
         """
-        self.observations = [[], []]
+        #self.observations = [[], []]
+        self.prev_states.clear()
+        self.prev_actions.clear()
         self.nextAction = None
         return Agent.episode_finished(self)
 
@@ -158,7 +167,7 @@ class RandomAgent(Agent):
     """
     def choose_action(self, env, obs):
         super(RandomAgent, self).choose_action(env, obs)
-        return array([choice(env.actions)])
+        return np.array([choice(env.actions)])
 
     def feedback(self, obs, action, reward, obs2): 
         pass
@@ -174,13 +183,13 @@ class PerfectOptionAgent(Agent):
         if self.option is None or self.option.is_terminated(env, state):
             shuffle(self.options)
             for opt in self.options:
-                print opt
+                #print opt
                 if opt.can_initiate(env, state):
                     print "Initiate option", opt
                     self.option = opt
                     break
         if self.option is None:
-            return array([choice(env.actions)])
+            return np.array([choice(env.actions)])
         else:
             return self.option.choose_action(env, state)
 

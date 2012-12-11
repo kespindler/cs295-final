@@ -48,8 +48,8 @@ def run_experiment(env, agent, rend = None, episodes = None, delay = 0, outfpath
             sleep(delay)
 
         i += 1
-        if i % 100 == 0:
-            print i
+        #if i % 100 == 0:
+        #    print i
     return episode_lengths
 
 def uniform_arr(*strings):
@@ -68,9 +68,9 @@ def rooms_from_fpath(fpath):
     with open(fpath) as f:
         text = f.read().rstrip()
     strings = text.split('\n\n')
-    print '\n--------------\n'.join(strings)
+    #print '\n--------------\n'.join(strings)
     rooms = uniform_arr(*strings)
-    print rooms
+    #print rooms
     return rooms
 
 class Bidict(dict):
