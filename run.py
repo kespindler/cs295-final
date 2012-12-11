@@ -19,7 +19,7 @@ actionDesc = (6,)
 folder = 'lightworlds'
 worldfnames = [os.path.join(folder, f) for f in os.listdir(folder)]
 
-N_DUPS = 2
+N_DUPS = 3
 #N_DUPS = 10
 N_EPISODES = 70
 #N_EPISODES = 1
