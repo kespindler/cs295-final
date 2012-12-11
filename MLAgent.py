@@ -1,5 +1,5 @@
 from agent import Agent
-from numpy import identity, dot, where
+from numpy import array, zeros, identity, dot, where
 from random import choice, random, randint
 
 class RLSSarsaAgent(Agent):
@@ -15,20 +15,21 @@ class RLSSarsaAgent(Agent):
         self.stateDim = stateDim
         self.stateOffset = stateOffset
         self.actionNum = actionDesc # let's just assume this is an int for now
-        self.alpha = alpha
         self.gamma = gamma
         self.slambda = slambda
         self.epsilon = epsilon
         self.decay = decay
         
         # init for rls-sarsa
-        self.porder = 2
-        self.featureNum = (self.stateDim + self.actionDim) * (self.porder + 1)
-        self.delta = 1
+        self.porder = 10
+        self.actionFeatures = self.stateDim * self.porder
+        self.featureNum = self.actionFeatures * self.actionNum + 1
+        self.delta = 0.0001
+        
         self.bmat = identity(self.featureNum) * self.delta
         self.bvec = zeros((self.featureNum, 1))
         self.weights = zeros((self.featureNum,1))
-        self.epsilon = zeros((self.featureNum,1))
+        self.eligibility = zeros((self.featureNum,1))
         
         self.nextAction = None
     
@@ -44,23 +45,28 @@ class RLSSarsaAgent(Agent):
                 outputs = []
         
                 # loop over actions and find estimated Q value for each paired with obs
-                for i in range(0, self.actionNum, 1):
-                    feat = self.poly_basis(obs+tuple(i))
-                    estQ = dot(self.weights.transpose(), feat)
+                for j in range(0, self.actionNum, 1):
+                    feat = self.poly_basis(obs,j)
+                    estQ = dot(self.weights.transpose(), feat)[0][0]
                     outputs.append(estQ)
+                
+                #print(outputs)
         
                 # find the max action
                 # if multiple exist pick randomly
                 maxobj = max(outputs)
                 i = choice([i for i, v in enumerate(outputs) if v == maxobj])
+                i = array([i,])
+                
             else:
                 # choose randomly
-                i = array(tuple(randint(0, self.actionNum)))
+                i = array((randint(0,self.actionNum),))
         
         # cleanup
         self.nextAction = None
         self.epsilon *= self.decay
         
+        print(i)
         return i
     
     def feedback(self, obs, a, r, nextobs, nexta = None):
@@ -71,16 +77,16 @@ class RLSSarsaAgent(Agent):
             self.nextAction = nexta
         
         obs = obs[self.stateOffset:(self.stateOffset+self.stateDim)]
-        a = tuple(a)
+        a = a[0]
         nextobs = nextobs[self.stateOffset:(self.stateOffset+self.stateDim)]
-        nexta = tuple(nexta)
+        nexta = nexta[0]
         
         # convert feedback to feature vector
-        feat = self.poly_basis(obs+a)
-        nextfeat = self.poly_basis(nextobs+nexta)
+        feat = self.poly_basis(obs,a)
+        nextfeat = self.poly_basis(nextobs,nexta)
         
-        # update epsilon
-        self.epsilon = self.slambda * self.gamma * self.epsilon + feat
+        # update eligibility
+        self.eligibility = self.slambda * self.gamma * self.eligibility + feat
         
         # update b mat
         # start by computing common components
@@ -88,25 +94,28 @@ class RLSSarsaAgent(Agent):
         lastb = lastb.transpose()
         lastb = dot(lastb, self.bmat)
         # numerator
-        numerator = dot(self.bmat, dot(self.epsilon, lastb))
-        denominator = 1 + dot(lastb,e)
+        numerator = dot(self.bmat, dot(self.eligibility, lastb))
+        denominator = 1 + dot(lastb,self.eligibility)
         self.bmat = self.bmat - (numerator / denominator)
         
         # update b vec
-        self.bvec = self.bvec + r * self.epsilon
+        self.bvec = self.bvec + r * self.eligibility
         
-        # find weights
+        # update weights
         self.weights = dot(self.bmat, self.bvec)
     
-    def poly_basis(self, vec):
-        """ convert observations to polynomial basis of degree self.featureNum
-        """
-        vec = array(vec)
+    def poly_basis(self, obs, a):
+        vec = array([[v] for v in obs])
         feat = zeros((self.featureNum,1))
-        for i in range(0, self.porder, 1):
-            if i is 0:
-                feat[:self.stateDim] = 1 # constant term is easy to compute
-            else:
-                feat[(i*self.stateDim):((i+1)*self.stateDim)] = vec ** i
-        
+        feat[0] = 1 # constant term
+        featSize = self.stateDim
+        actionOffset = self.actionFeatures * a + 1
+        for i in range(1,self.porder+1):
+            feat[((i-1)*featSize+actionOffset):(i*featSize+actionOffset)] = vec ** i
+		
         return feat
+    
+    def episode_finished(self):
+        print("EPISODE FINISHED: STEPS: " + str(self.stepCount))
+        super(RLSSarsaAgent, self).episode_finished()
+        self.eligibility = zeros((self.featureNum,1))
