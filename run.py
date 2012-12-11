@@ -1,7 +1,7 @@
 import numpy as np
 from environment import Lightworld
 from lightworld_gen import gen_world
-from agent import SarsaAgent, RandomAgent
+from agent import SarsaAgent, RandomAgent, PerfectOptionAgent
 from options import OptionAgent
 try:
     from pygamerenderer import PygameRenderer
@@ -31,7 +31,7 @@ def run_iteration(lightworldfname):
     env = Lightworld(*rooms_from_fpath(lightworldfname))
     stateDesc = env.dimensions()[0:problemSpaceDim]
     actionDesc = (6,)
-    agent = SarsaAgent(stateDesc, actionDesc)
+    agent = PerfectOptionAgent(stateDesc, actionDesc)
     #rend = PygameRenderer(env)
     rend = None
     episode_lengths = run_experiment(env, agent, rend, episodes = N_EPISODES)
