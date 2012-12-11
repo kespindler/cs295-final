@@ -97,16 +97,17 @@ class OptionAgent(SarsaAgent):
         
         return optr
         
-    def feedback(self, obs, a, r, nextobs, nexta = None):
+    def feedback(self, obs, a, r, nextobs, nexta = None, env = None):
         if self.currentOption is not None:
             # update current option
             optr = self.shapeReward(obs, r, nextobs)
-            self.currentOption.feedback(obs,a,optr,nextobs,nexta)
+            self.currentOption.feedback(obs,a,optr,nextobs,nexta, env)
             
             # update metapolicy
             a = self.currentOptionKey
             nexta = self.currentOptionKey
-            super(OptionAgent, self).feedback(obs, self.currentOptionKey, r, nextobs, nexta)
+            super(OptionAgent, self).feedback(obs, self.currentOptionKey, 
+                    r, nextobs, nexta, env)
     
     def episode_finished(self):
         """ Reset options in addition to resetting self
@@ -117,8 +118,3 @@ class OptionAgent(SarsaAgent):
         self.currentOption = None
         self.currentOptionKey = None
         return super(OptionAgent, self).episode_finished()
-
-# from pylov.agent import OptionAgent, Option
-# from pylov.lightroom import Lightroom
-# from pylov.environment import filter_states
-# 

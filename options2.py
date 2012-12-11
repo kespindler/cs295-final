@@ -27,7 +27,7 @@ class Option2(object):
             key_pos = filter_states(env.states, field)
             # Not positive if this is right move here.
             if not key_pos:
-                print 'random action for plan', action
+                print 'RANDOM action for plan', action
                 return array([choice(env.actions)])
             priority_func = lambda s: manhattan_dist(s, key_pos[0])
             expand_partial = lambda s: expand_state(env.states, s)
@@ -46,7 +46,7 @@ class Option2(object):
 class KeyOption(Option2):
     def can_initiate(self, env, state):
         self.room = -1
-        return (state.h == 0)
+        return (state.h == 0 and state.l == 1)
 
     def is_terminated(self, env, state):
         if random() < self.epsilon:
@@ -74,7 +74,7 @@ class LockOption(Option2):
 class DoorOption(Option2):
     def can_initiate(self, env, state):
         self.room = -1
-        return (state.l == 0)
+        return (state.l == 0 and state.h == 0)
 
     def is_terminated(self, env, state):
         if random() < self.epsilon:

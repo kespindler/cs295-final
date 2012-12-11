@@ -13,7 +13,7 @@ from collections import deque
 class Agent(object):
     __metaclass__ = ABCMeta
     
-    def __init__(self):
+    def __init__(self, state_desc=None):
         self.stepCount = 0
     
     @abstractmethod
@@ -28,7 +28,7 @@ class Agent(object):
         return None
     
     @abstractmethod
-    def feedback(self, state, action, reward, state2, action2 = None):
+    def feedback(self, state, action, reward, state2, action2 = None, env=None):
         """ Logs feedback from environment in SARSA form with agent
             As usual, obs is just a state in MDPs
             obs and a are tuples, r is a float
@@ -100,12 +100,12 @@ class SarsaAgent(Agent):
         self.epsilon *= self.decay
         return i
     
-    def feedback(self, obs, a, r, nextobs, nexta = None):
+    def feedback(self, obs, a, r, nextobs, nexta = None, env=None):
         """ Straightforward implementation of SARSALambda, maybe better if moved into subclass?
         """
         # if no next action is given choose one using policy
         if nexta is None:
-            nexta = self.choose_action(None, nextobs)
+            nexta = self.choose_action(env, nextobs)
             self.nextAction = nexta
             #nexta = tuple(nexta)
         
@@ -174,9 +174,10 @@ class RandomAgent(Agent):
 #------------------------------------------
 
 class PerfectOptionAgent(SarsaAgent):
-    def __init__(self, stateDesc):
+    def __init__(self, state_desc):
         self.options = [KeyOption(), LockOption(), DoorOption()]
-        SarsaAgent.__init__(self, stateDesc, (len(self.options),))
+        SarsaAgent.__init__(self, state_desc, (len(self.options),))
+        self.dims = len(state_desc)  # dims in state vector that we care about
         self.option = None
 
     def choose_action(self, env, state):
@@ -186,15 +187,20 @@ class PerfectOptionAgent(SarsaAgent):
                 opti = SarsaAgent.choose_action(self, env, state)[0]
                 self.option = self.options[opti]
                 if not self.option.can_initiate(env, state):
-                    self.qTable[state+(opti,)] = float('-inf')
+                    self.qTable[state[:self.dims]+(opti,)] = float('-inf')
                     self.option = None
+                else:
+                    print 'started option', self.option
         return self.option.choose_action(env, state)
         #    #return np.array([choice(env.actions)])
         #else:
         #    return self.option.choose_action(env, state)
 
-    #def feedback(self, state, action, reward, state2, action2 = None):
-    #    SarsaAgent.
+    def feedback(self, state, action, reward, state2, action2 = None, env=None):
+        assert self.option is not None
+        opti = np.array([self.options.index(self.option)])
+        SarsaAgent.feedback(self, state, opti,
+                reward, state2, opti, env)
 
     def episode_finished(self):
         pass
