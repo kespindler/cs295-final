@@ -19,11 +19,11 @@ actionDesc = (6,)
 folder = 'lightworlds'
 worldfnames = [os.path.join(folder, f) for f in os.listdir(folder)]
 
-N_DUPS = 10
-#N_DUPS = 10 #10
+N_DUPS = 2
+#N_DUPS = 10
 N_EPISODES = 70
 #N_EPISODES = 1
-#worldfnames = worldfnames[:5] # dont' do this
+worldfnames = worldfnames[:25] # dont' do this
 q = mp.Queue()
 
 def run_iteration(lightworldfname):
