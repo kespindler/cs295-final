@@ -84,11 +84,19 @@ class Lightworld(Environment):
         #red == door
         rgbs = [0]*12
         cap_manhat_dist = lambda a,b: max(0, 1. - manhattan_dist(a, b)/20.)
-        rgbs[::3] = [0 if self.states[self.goal] == Lightworld.field.DOOR 
-                     else cap_manhat_dist(pos, self.goal) for pos in next_posns]
-        rgbs[1::3] = [cap_manhat_dist(pos, self.lock_pos) for pos in next_posns]
-        rgbs[2::3] = [0 if (self.key_pos is None or self.states[self.key_pos] != Lightworld.field.KEY)
-                      else cap_manhat_dist(pos, self.key_pos) for pos in next_posns]
+        #rgbs[::3] = [0 if self.states[self.goal] == Lightworld.field.DOOR 
+        reds = [0 if self.states[self.goal] == Lightworld.field.DOOR 
+                     else cap_manhat_dist(p, self.goal) for p in next_posns]
+        reds = [cap_manhat_dist(pos, self.goal) for r in reds if r == max(reds)]
+        #rgbs[1::3] = [cap_manhat_dist(pos, self.lock_pos) for pos in next_posns]
+        greens = [cap_manhat_dist(p, self.lock_pos) for p in next_posns]
+        greens = [cap_manhat_dist(pos, self.lock_pos) for g in greens if g == max(greens)]
+        blues = [0 if (self.key_pos is None or self.states[self.key_pos] != Lightworld.field.KEY)
+                      else cap_manhat_dist(p, self.key_pos) for p in next_posns]
+        blues = [cap_manhat_dist(pos, self.key_pos) for b in blues if b == max(blues)]
+        rgbs[::3] = reds
+        rgbs[1::3] = greens
+        rgbs[2::3] = blues
         #for pos in next_posns:
         #    #pos2 = tuple(map(sum, zip(pos, dir)))
         #    # door, key, lock in rgb order
