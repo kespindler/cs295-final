@@ -17,7 +17,7 @@ env = Lightworld(*rooms_from_fpath('basic_lightworld.txt'))
 stateDesc = env.dimensions()[0:problemSpaceDim]
 agent = OptionAgent(stateDesc, actionDesc)
 # agent = SarsaAgent(stateDesc, actionDesc)
-# agent = GradientDescentSarsaAgent(agentSpaceDim, problemSpaceDim, actionDesc[0])
+# agent = GradientDescentSarsaAgent(agentSpaceDim, problemSpaceDim, actionDesc)
 rend = PygameRenderer(env)
 # rend = None
 

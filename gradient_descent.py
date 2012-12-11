@@ -8,11 +8,11 @@ class GradientDescentSarsaAgent(Agent):
     """
     
     def __init__(self, stateDim, stateOffset, actionDesc,
-                alpha = 0.1, gamma = 0.99, slambda = 0.9, epsilon = 0.01, decay = 0.99, traceThreshold = 0.0001):
+                alpha = 0.01, gamma = 0.99, slambda = 0.9, epsilon = 0.01, decay = 0.99, traceThreshold = 0.0001):
         super(GradientDescentSarsaAgent, self).__init__()
         self.stateDim = stateDim
         self.stateOffset = stateOffset
-        self.actionNum = actionDesc # let's just assume this is an int for now
+        self.actionNum = actionDesc[0] # let's just assume this is an int for now
         self.alpha = alpha
         self.gamma = gamma
         self.slambda = slambda
