@@ -1,6 +1,6 @@
 from utility import enum
 from random import random
-from agent import SarsaAgent
+from agent import Agent, SarsaAgent
 
 class Option(SarsaAgent):
     """ Option
@@ -8,6 +8,24 @@ class Option(SarsaAgent):
         Only additions are initialization and termination sets
     """
     opt_epsilon = .01
+
+class ActionOption(Agent):
+    def __init__(self, action):
+        self.actionOption = action
+        super(ActionOption, self).__init__()
+    
+    def choose_action(self, env, obs):
+        super(ActionOption, self).choose_action(env, obs)
+        return self.actionOption
+    
+    def feedback(self, obs, a, r, nextobs, nexta=None, env=None):
+        pass
+    
+    def canTerminate(self, state):
+        return True
+    
+    def canInitialize(self, state):
+        return True
 
 class KeyOption(Option):
     def canTerminate(self, state):

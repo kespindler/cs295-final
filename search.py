@@ -8,6 +8,15 @@ def manhattan_dist(a,b):
     bx,by = b
     return abs(by-ay) + abs(bx-ax)
 
+def straight_line_dist(a,b):
+    ax,ay = a
+    bx,by = b
+    if ax == bx:
+        return abs(by - ay)
+    elif ay == by:
+        return abs(bx - ax)
+    else:
+        return 20
     
 def best_first_graph_search(start, end, f, expand_state):
     """Search the nodes with the lowest f scores first.

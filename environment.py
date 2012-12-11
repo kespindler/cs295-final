@@ -39,7 +39,7 @@ class Lightworld(Environment):
         actions.W:(-1, 0)})
     step_reward = -1
     final_reward = 1000
-    task_reward = -1
+    task_reward = 1
 
     def set_room(self, room):
         assert 0 <= room < len(self.rooms)
@@ -87,13 +87,13 @@ class Lightworld(Environment):
         #rgbs[::3] = [0 if self.states[self.goal] == Lightworld.field.DOOR 
         reds = [0 if self.states[self.goal] == Lightworld.field.DOOR 
                      else cap_manhat_dist(p, self.goal) for p in next_posns]
-        reds = [cap_manhat_dist(pos, self.goal) if r == max(reds) else 0 for r in reds]
+        reds = [cap_manhat_dist(pos, self.goal) if r > 0 and r == max(reds) else 0 for r in reds]
         #rgbs[1::3] = [cap_manhat_dist(pos, self.lock_pos) for pos in next_posns]
-        greens = [cap_manhat_dist(p, self.lock_pos) for p in next_posns]
-        greens = [cap_manhat_dist(pos, self.lock_pos) if g == max(greens) else 0 for g in greens]
-        blues = [0 if (self.key_pos is None or self.states[self.key_pos] != Lightworld.field.KEY)
+        blues = [cap_manhat_dist(p, self.lock_pos) for p in next_posns]
+        blues = [cap_manhat_dist(pos, self.lock_pos) if g > 0 and g == max(blues) else 0 for g in blues]
+        greens = [0 if (self.key_pos is None or self.states[self.key_pos] != Lightworld.field.KEY)
                       else cap_manhat_dist(p, self.key_pos) for p in next_posns]
-        blues = [cap_manhat_dist(pos, self.key_pos) if b == max(blues) else 0 for b in blues]
+        greens = [cap_manhat_dist(pos, self.key_pos) if b > 0 and b == max(greens) else 0 for b in greens]
         rgbs[::3] = reds
         rgbs[1::3] = greens
         rgbs[2::3] = blues

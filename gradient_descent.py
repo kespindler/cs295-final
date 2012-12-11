@@ -1,3 +1,4 @@
+from numpy import cos, pi
 from agent import Agent
 from numpy import array, zeros, dot
 from numpy.random import rand
@@ -8,7 +9,7 @@ class GradientDescentSarsaAgent(Agent):
     """
     
     def __init__(self, stateDim, stateOffset, actionDesc,
-                alpha = 0.01, gamma = 0.99, slambda = 0.9, epsilon = 0.01, decay = 0.99, traceThreshold = 0.0001):
+                alpha = 0.002, gamma = 0.99, slambda = 0.1, epsilon = 0.5, decay = 0.995, traceThreshold = 0.0001):
         super(GradientDescentSarsaAgent, self).__init__()
         self.stateDim = stateDim
         self.stateOffset = stateOffset
@@ -40,42 +41,45 @@ class GradientDescentSarsaAgent(Agent):
         i = self.nextAction
         if i is None:
             if random() > self.epsilon:
-                # choose greedily
-                outputs = []
-        
-                # loop over actions and find estimated Q value for each paired with obs
-                for j in range(0, self.actionNum, 1):
-                    feat = self.poly_basis(o)
-                    estQ = dot(self.weights[j], feat)
-                    outputs.append(estQ)
-                
-                #print(outputs)
-        
-                # find the max action
-                # if multiple exist pick randomly
-                maxobj = max(outputs)
-                i = choice([i for i, v in enumerate(outputs) if v == maxobj])
-                i = array([i,])
+                i = self.get_greedy_action(o)
                 
             else:
                 # choose randomly
-                i = array((randint(0,self.actionNum),))
+                i = array((randint(0,self.actionNum-1),))
         
         # cleanup
         self.nextAction = None
         self.epsilon *= self.decay
         
-        print(i)
+        return i
+    
+    def get_greedy_action(self,o):
+        # choose greedily
+        outputs = []
+        
+        # loop over actions and find estimated Q value for each paired with obs
+        for j in range(0, self.actionNum, 1):
+            feat = self.poly_basis(o)
+            estQ = dot(self.weights[j], feat)
+            outputs.append(estQ)
+                
+        print(outputs)
+        
+        # find the max action
+        # if multiple exist pick randomly
+        maxobj = max(outputs)
+        i = choice([i for i, v in enumerate(outputs) if v == maxobj])
+        i = array([i,])
+        
         return i
     
     def feedback(self, obs, a, r, nextobs, nexta = None, env=None):
-        if nexta == None:
-            nexta = self.choose_action(None, nextobs)
-            self.nextAction = nexta
-        
         obs = obs[self.stateOffset:(self.stateOffset+self.stateDim)]
         a = a[0]
         nextobs = nextobs[self.stateOffset:(self.stateOffset+self.stateDim)]
+        if nexta == None:
+            nexta = self.get_greedy_action(nextobs)
+
         nexta = nexta[0]
         
         feat = self.poly_basis(obs)
@@ -90,10 +94,12 @@ class GradientDescentSarsaAgent(Agent):
         self.eligibility[a] += feat
         self.weights += self.alpha * delta * self.eligibility
         
+        
+        
         return
     
     def poly_basis(self, obs):
-        vec = array([v, 2*v, 3*v for v in obs])
+        vec = array([v for v in obs])
         feat = zeros((self.featureNum))
         feat[0] = 1 # constant term
         featSize = self.stateDim
@@ -103,10 +109,12 @@ class GradientDescentSarsaAgent(Agent):
         return feat
     
     def fourier_basis(self, obs):
-        vec = [[math.cos(math.pi * v), math.cos(math.pi*2*v), math.cos(math.pi*3*v)] for v in obs]
+        """ Fourier basis, hardcoded to order 3 for now
+        """
+        vec = [[cos(pi * v), cos(pi*2*v), cos(pi*3*v)] for v in obs]
         feat = zeros((self.featureNum))
         feat[0] = 1
         for i in range(0,self.stateDim):
             feat[3*i+1:3*(i+1)+1] = vec[i]
-        
+            
         return feat
