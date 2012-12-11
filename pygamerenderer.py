@@ -3,6 +3,7 @@ from abc import ABCMeta, abstractmethod
 from pygame.locals import *
 from os import path
 from environment import Lightworld
+import numpy as np
 field = Lightworld.field
 
 class RenderEngine(object):
@@ -19,9 +20,11 @@ IMG_MARGIN = 4
 #TODO maybe wantt o standsard this a bit
 LIGHTGREY = (0xfb, 0xfb, 0xfb)
 MEDGREY = (0xc0, 0xc0, 0xc0)
+LIGHTGREEN = (0x80, 0xfa,0x80)
 BLACK = (0,0,0)
-BLUE = (0xa,0xa,0xfa)
-GREEN = (0x80,0xf0,0x80)
+RED = (0xff,0,0)
+GREEN = (0,0xff,0)
+BLUE = (0,0,0xff)
 WHITE = (0xff, 0xff, 0xff)
 
 def load_img(name):
@@ -35,6 +38,17 @@ def load_img(name):
 def img_point(i, j):
     return (i * FIELD_SIZE + IMG_MARGIN, 
             j * FIELD_SIZE + IMG_MARGIN)
+    
+def norm(qval):
+    #import pdb;pdb.set_trace()
+    q2 = [0 if np.isinf(q) else q for q in qval]
+    minv = min(q2)
+    q3 = [q - minv for q in q2]
+    maxv = max(abs(q) for q in q3)
+    if maxv:
+        return [q / maxv for q in q3]
+    else:
+        return q3
 
 class PygameRenderer(RenderEngine):
     def __init__(self, maze_env = None, agent = None):
@@ -85,13 +99,39 @@ class PygameRenderer(RenderEngine):
     #                    self.fill_triangle(i,j, max_val)
     #    self.screen.blit(self.goal_img, img_point(*self.maze.goal))
         
-    def fill_grid(self):
+    def fill_state(self, state):
+        if not (hasattr(self.agent, 'options') and hasattr(self.agent, 'qTable')):
+            self.screen.fill(LIGHTGREY, self.make_rect(state.x,state.y))
+        else:
+            #door,key,lock
+            #r,g,b
+            qvals = self.agent.qTable[state[:self.agent.stateDim]]
+            #min = qvals.min()
+            #if float('-inf') < min < float('inf'):
+            #qvals += qvals.min() # everything is >= 0
+            ##qvals /= qvals.max() # normalized
+            #max = qvals.max()
+            #print max, qvals
+            #if float('-inf') < max < float('inf'):
+            #    qvals /= max
+            #print qvals
+            qvals = norm(qvals)
+            x,y,w,h = self.make_rect(state.x,state.y)
+            w = w/3
+            #print qvals
+            for v, c, i in zip(qvals, [RED, GREEN, BLUE], range(3)):
+                #v = 0 if float('-inf') < v < float('inf') else 
+                #print v, c, i
+                c = tuple(int(i * v) for i in c)
+                self.screen.fill(c, (x+i*w,y,w,h))
+
+    def fill_grid(self,state):
         for i in range(self.maze.states.shape[0]):
             for j in range(self.maze.states.shape[1]):
                 if self.maze.states[i, j] == field.WALL:
-                    self.screen.fill(GREEN, self.make_rect(i,j))
+                    self.screen.fill(LIGHTGREEN, self.make_rect(i,j))
                 else:
-                    self.screen.fill(LIGHTGREY, self.make_rect(i,j))
+                    self.fill_state(state._replace(x=i,y=j))
                     if self.maze.states[i,j] == field.KEY:
                         self.screen.blit(self.key_img, img_point(i,j))
                     elif self.maze.states[i,j] == field.DOOR:
@@ -102,6 +142,7 @@ class PygameRenderer(RenderEngine):
 
     def update(self, state):
         self.screen.convert()
-        self.fill_grid()
+        self.fill_grid(state)
+        #self.fill_state(state)
         self.screen.blit(self.person_img, img_point(state.x, state.y))
         pygame.display.update()

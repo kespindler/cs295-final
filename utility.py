@@ -12,7 +12,7 @@ def enum(*sequential,**named):
     s.__getitem__ = lambda self, i: enums.values()[i]
     return s()
 
-def run_experiment(env, agent, rend = None, episodes = None, agent_env = None delay = 0, outfpath = None):
+def run_experiment(env, agent, rend = None, episodes = None, agent_env = None, delay = 0, outfpath = None):
     i = 0
     last = 0
     episode_lengths = []

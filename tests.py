@@ -36,7 +36,7 @@ def test_env(cls_agent):
     lightworld = Lightworld(*rooms_from_fpath('basic_lightworld.txt'))
     probdim = 5
     agent = cls_agent(lightworld.dimensions()[:probdim], len(lightworld.actions))
-    rend = PygameRenderer(lightworld)
+    rend = PygameRenderer(lightworld, agent)
     run_experiment(lightworld, agent, rend)#, delay=.05)
 
 def test_env1():
@@ -52,4 +52,4 @@ def test_env3():
     test_env(SarsaAgent)
 
 if __name__ == "__main__":
-    test_env3()
+    test_env2()
