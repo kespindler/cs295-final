@@ -80,12 +80,12 @@ class Lightworld(Environment):
         next_posns = [tuple(map(sum, zip(pos, dir))) for dir in Lightworld.movemap.values()]
         #field_locs = [filter_states(self.states, field) for field in [self.field.DOOR, self.field.KEY, self.field.LOCK]]
         #field_locs = [[self.goal], self.key_pos, self.lock_pos]
-	#rgbs = [(0 if not fieldpos else max(0, 1. - manhattan_dist(pos, fieldpos[0])/20.)) for fieldpos in field_locs for pos in next_posns]
+        #rgbs = [(0 if not fieldpos else max(0, 1. - manhattan_dist(pos, fieldpos[0])/20.)) for fieldpos in field_locs for pos in next_posns]
         #red == door
         rgbs = [0]*12
-        cap_manhat_dist = lambda a,b: max(0, 1. - manhattan_dist(a, b)/20.
+        cap_manhat_dist = lambda a,b: max(0, 1. - manhattan_dist(a, b)/20.)
         rgbs[::3] = [0 if self.states[self.goal] == Lightworld.field.DOOR 
-                     else cap_manhat_dist(pos, self.goal_pos)) for pos in next_posns]
+                     else cap_manhat_dist(pos, self.goal) for pos in next_posns]
         rgbs[1::3] = [cap_manhat_dist(pos, self.lock_pos) for pos in next_posns]
         rgbs[2::3] = [0 if (self.key_pos is None or self.states[self.key_pos] != Lightworld.field.KEY)
                       else cap_manhat_dist(pos, self.lock_pos) for pos in next_posns]

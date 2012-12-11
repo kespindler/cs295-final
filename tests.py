@@ -34,7 +34,8 @@ def test_env(cls_agent):
     from pygamerenderer import PygameRenderer
     from environment import Lightworld
     lightworld = Lightworld(*rooms_from_fpath('basic_lightworld.txt'))
-    agent = cls_agent(lightworld.dimensions())
+    probdim = 5
+    agent = cls_agent(lightworld.dimensions()[:probdim])
     rend = PygameRenderer(lightworld)
     run_experiment(lightworld, agent, rend, delay=.05)
 
