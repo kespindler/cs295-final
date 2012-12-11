@@ -190,7 +190,8 @@ class PerfectOptionAgent(SarsaAgent):
                     self.qTable[state[:self.dims]+(opti,)] = float('-inf')
                     self.option = None
                 else:
-                    print 'started option', self.option
+                    pass
+                    #print 'started option', self.option
         return self.option.choose_action(env, state)
         #    #return np.array([choice(env.actions)])
         #else:

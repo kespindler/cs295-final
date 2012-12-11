@@ -31,7 +31,7 @@ def run_iteration(lightworldfname):
     env = Lightworld(*rooms_from_fpath(lightworldfname))
     stateDesc = env.dimensions()[0:problemSpaceDim]
     actionDesc = (6,)
-    agent = PerfectOptionAgent(stateDesc, actionDesc)
+    agent = PerfectOptionAgent(stateDesc)
     #rend = PygameRenderer(env)
     rend = None
     episode_lengths = run_experiment(env, agent, rend, episodes = N_EPISODES)
