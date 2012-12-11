@@ -93,11 +93,20 @@ class GradientDescentSarsaAgent(Agent):
         return
     
     def poly_basis(self, obs):
-        vec = array([v for v in obs])
+        vec = array([v, 2*v, 3*v for v in obs])
         feat = zeros((self.featureNum))
         feat[0] = 1 # constant term
         featSize = self.stateDim
         for i in range(1,self.porder+1):
             feat[((i-1)*featSize+1):(i*featSize)+1] = vec ** i
+        
+        return feat
+    
+    def fourier_basis(self, obs):
+        vec = [[math.cos(math.pi * v), math.cos(math.pi*2*v), math.cos(math.pi*3*v)] for v in obs]
+        feat = zeros((self.featureNum))
+        feat[0] = 1
+        for i in range(0,self.stateDim):
+            feat[3*i+1:3*(i+1)+1] = vec[i]
         
         return feat
