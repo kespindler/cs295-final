@@ -35,8 +35,8 @@ def run_iteration(lightworldfname):
     env = Lightworld(*rooms_from_fpath(lightworldfname))
     stateDesc = env.dimensions()[0:problemSpaceDim]
     actionDesc = (6,)
-    #agent = PerfectOptionAgent(stateDesc, actionDesc)
-    agent = SarsaAgent(stateDesc, actionDesc)
+    agent = PerfectOptionAgent(stateDesc, actionDesc)
+    #agent = SarsaAgent(stateDesc, actionDesc)
     try:
         rend = PygameRenderer(env)
     except:

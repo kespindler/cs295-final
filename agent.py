@@ -180,7 +180,7 @@ class RandomAgent(Agent):
 #------------------------------------------
 
 class PerfectOptionAgent(SarsaAgent):
-    def __init__(self, state_desc):
+    def __init__(self, state_desc, action_desc):
         self.options = [KeyOption(), LockOption(), DoorOption()]
         SarsaAgent.__init__(self, state_desc, (len(self.options),))
         self.dims = len(state_desc)  # dims in state vector that we care about
