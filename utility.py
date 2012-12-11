@@ -12,7 +12,7 @@ def enum(*sequential,**named):
     s.__getitem__ = lambda self, i: enums.values()[i]
     return s()
 
-def run_experiment(env, agent, rend = None, episodes = None, delay = 0, outfpath = None):
+def run_experiment(env, agent, rend = None, episodes = None, agent_env = None delay = 0, outfpath = None):
     i = 0
     last = 0
     episode_lengths = []
@@ -41,11 +41,14 @@ def run_experiment(env, agent, rend = None, episodes = None, delay = 0, outfpath
             episode_lengths.append(steps_taken)
             if episodes is not None and len(episode_lengths) == episodes:
                 break
+            elif agent_env is not None:
+                # If there's an agent environment, run the agent in it once then return
+                run_experiment(ageng_env, agent, None, 1)
             env.restart_episode()
             current_state = env.new_state()
             last = i
 
-        if delay > 0:
+        if delay > 0: 
             sleep(delay)
 
         i += 1
