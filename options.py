@@ -7,11 +7,11 @@ class Option(SarsaAgent):
         Core learning uses standard agent to track qvalues, run SARSA(lambda)
         Only additions are initialization and termination sets
     """
-    epsilon = .01
+    opt_epsilon = .01
 
 class KeyOption(Option):
     def canTerminate(self, state):
-        if random() < self.epsilon:
+        if random() < Option.opt_epsilon:
             return True
         return (state.h == 1)
 
@@ -21,7 +21,7 @@ class KeyOption(Option):
 
 class LockOption(Option):
     def canTerminate(self, state):
-        if random() < self.epsilon:
+        if random() < Option.opt_epsilon:
             return True
         return (state.l == 0)
 
@@ -31,7 +31,7 @@ class LockOption(Option):
 
 class DoorOption(Option):
     def canTerminate(self, state):
-        if random() < self.epsilon:
+        if random() < Option.opt_epsilon:
             return True
         return (state.r > self.last_room)
 
@@ -115,4 +115,6 @@ class OptionAgent(SarsaAgent):
         """
         for opt in self.options:
             opt.episode_finished()
+        self.currentOption = None
+        self.currentOptionKey = None
         return super(OptionAgent, self).episode_finished()

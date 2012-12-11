@@ -8,11 +8,11 @@ class GradientDescentSarsaAgent(Agent):
     """
     
     def __init__(self, stateDim, stateOffset, actionDesc,
-                alpha = 0.1, gamma = 0.99, slambda = 0.9, epsilon = 0.01, decay = 0.99, traceThreshold = 0.0001):
+                alpha = 0.01, gamma = 0.99, slambda = 0.9, epsilon = 0.01, decay = 0.99, traceThreshold = 0.0001):
         super(GradientDescentSarsaAgent, self).__init__()
         self.stateDim = stateDim
         self.stateOffset = stateOffset
-        self.actionNum = actionDesc # let's just assume this is an int for now
+        self.actionNum = actionDesc[0] # let's just assume this is an int for now
         self.alpha = alpha
         self.gamma = gamma
         self.slambda = slambda
@@ -22,13 +22,13 @@ class GradientDescentSarsaAgent(Agent):
         
         # init for FA
         self.porder = 1
-        self.actionFeatures = self.stateDim * self.porder
-        self.featureNum = self.actionFeatures * self.actionNum + 1
+        self.featureNum = self.stateDim * self.porder + 1
         self.delta = 0.0001
         
-        self.weights = zeros((self.featureNum,1))
-        self.weights[0] = 1
-        self.eligibility = zeros((self.featureNum,1))
+        init = 1
+        self.weights = zeros((self.actionNum,self.featureNum))
+        self.weights[:,0] = init
+        self.eligibility = zeros((self.actionNum,self.featureNum))
         
         self.nextAction = None
     
@@ -36,7 +36,7 @@ class GradientDescentSarsaAgent(Agent):
         """ Evaluate function using current weights for all actions
             Pick max to find next action
         """
-        obs = obs[self.stateOffset:(self.stateOffset+self.stateDim)]
+        o = obs[self.stateOffset:(self.stateOffset+self.stateDim)]
         i = self.nextAction
         if i is None:
             if random() > self.epsilon:
@@ -45,8 +45,8 @@ class GradientDescentSarsaAgent(Agent):
         
                 # loop over actions and find estimated Q value for each paired with obs
                 for j in range(0, self.actionNum, 1):
-                    feat = self.poly_basis(obs,j)
-                    estQ = dot(self.weights.transpose(), feat)[0][0]
+                    feat = self.poly_basis(o)
+                    estQ = dot(self.weights[j], feat)
                     outputs.append(estQ)
                 
                 #print(outputs)
@@ -78,25 +78,35 @@ class GradientDescentSarsaAgent(Agent):
         nextobs = nextobs[self.stateOffset:(self.stateOffset+self.stateDim)]
         nexta = nexta[0]
         
-        feat = self.poly_basis(obs,a)
-        q = dot(self.weights.transpose(), feat)
-        nextfeat = self.poly_basis(nextobs,nexta)
-        nextq = dot(self.weights.transpose(), nextfeat)
+        feat = self.poly_basis(obs)
+        aweights = self.weights[a]
+        nextaweights = self.weights[nexta]
+        q = dot(aweights, feat)
+        nextfeat = self.poly_basis(nextobs)
+        nextq = dot(nextaweights, nextfeat)
         
         delta = r + self.gamma * nextq - q
-        self.eligibility *= self.gamma * self.slambda
-        self.eligibility += feat
+        self.eligibility *= self.gamma * self.slambda # decay over all traces!
+        self.eligibility[a] += feat
         self.weights += self.alpha * delta * self.eligibility
         
         return
     
-    def poly_basis(self, obs, a):
-        vec = array([[v] for v in obs])
-        feat = zeros((self.featureNum,1))
+    def poly_basis(self, obs):
+        vec = array([v, 2*v, 3*v for v in obs])
+        feat = zeros((self.featureNum))
         feat[0] = 1 # constant term
         featSize = self.stateDim
-        actionOffset = self.actionFeatures * a + 1
         for i in range(1,self.porder+1):
-            feat[((i-1)*featSize+actionOffset):(i*featSize+actionOffset)] = vec ** i
+            feat[((i-1)*featSize+1):(i*featSize)+1] = vec ** i
+        
+        return feat
+    
+    def fourier_basis(self, obs):
+        vec = [[math.cos(math.pi * v), math.cos(math.pi*2*v), math.cos(math.pi*3*v)] for v in obs]
+        feat = zeros((self.featureNum))
+        feat[0] = 1
+        for i in range(0,self.stateDim):
+            feat[3*i+1:3*(i+1)+1] = vec[i]
         
         return feat
