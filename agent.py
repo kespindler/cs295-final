@@ -1,7 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from random import random, choice, randint, shuffle
 import numpy as np
-from options2 import KeyOption, LockOption, DoorOption
 from math import isinf
 from collections import deque
 
@@ -178,38 +177,3 @@ class RandomAgent(Agent):
         pass
 
 #------------------------------------------
-
-class PerfectOptionAgent(SarsaAgent):
-    def __init__(self, state_desc, action_desc):
-        self.options = [DoorOption(), KeyOption(), LockOption()]
-        SarsaAgent.__init__(self, state_desc, (len(self.options),))
-        self.stateDim = len(state_desc)  # dims in state vector that we care about
-        self.option = None
-
-    def choose_action(self, env, state):
-        if self.option is None or self.option.is_terminated(env, state):
-            self.option = None
-            while self.option is None:
-                opti = SarsaAgent.choose_action(self, env, state)[0]
-                self.option = self.options[opti]
-                if not self.option.can_initiate(env, state):
-                    self.qTable[state[:self.stateDim]+(opti,)] = float('-inf')
-                    self.option = None
-                #print zip(*np.where(np.isinf(self.qTable)))
-                assert not np.all(np.isinf(self.qTable[state[:self.stateDim]])), (self, state)
-                #else:
-                #    pass
-                #    #print 'started option', self.option
-        return self.option.choose_action(env, state)
-        #    #return np.array([choice(env.actions)])
-        #else:
-        #    return self.option.choose_action(env, state)
-
-    def feedback(self, state, action, reward, state2, action2 = None, env=None):
-        assert self.option is not None
-        opti = np.array([self.options.index(self.option)])
-        SarsaAgent.feedback(self, state, opti,
-                reward, state2, opti, env)
-
-    def episode_finished(self):
-        pass

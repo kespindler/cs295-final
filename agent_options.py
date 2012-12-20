@@ -49,7 +49,7 @@ class COptionAgent(SarsaAgent):
     """ Learns over Agent options
     """
     optionEnum = enum(KEY=0, LOCK=1, DOOR=2)
-    optionReward = 100
+    optionReward = 1
     
     def __init__(self, stateDesc, agentStateOffset, actionDesc):
         stateDim = len(stateDesc) - agentStateOffset
