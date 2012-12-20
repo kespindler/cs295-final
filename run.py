@@ -1,7 +1,8 @@
 import numpy as np
 from environment import Lightworld
 from lightworld_gen import gen_world
-from agent import SarsaAgent, RandomAgent, PerfectOptionAgent
+from agent import SarsaAgent, RandomAgent
+from perfect_options import PerfectOptionAgent
 from options import OptionAgent
 try:
     from pygamerenderer import PygameRenderer
@@ -24,26 +25,28 @@ assert not os.path.exists(outpng)
 
 worldfnames = [os.path.join(folder, f) for f in os.listdir(folder)]
 
-N_DUPS = 2
+N_DUPS = 1
 #N_DUPS = 10
-N_EPISODES = 70
+N_EPISODES = 100
 #N_EPISODES = 1
-worldfnames = worldfnames[:5] # dont' do this
+worldfnames = worldfnames[:25] # dont' do this
 q = mp.Queue()
 
 def run_iteration(lightworldfname):
     print 'Begin lightworld', lightworldfname
     env = Lightworld(*rooms_from_fpath(lightworldfname))
     stateDesc = env.dimensions()[0:problemSpaceDim]
-    action_desc = (6,)
-    #agent = PerfectOptionAgent(stateDesc, action_desc)
-    agent = OptionAgent(stateDesc, action_desc)
+    actionDesc = (6,)
+    # agent = SarsaAgent(stateDesc, actionDesc)
+    # agent = PerfectOptionAgent(stateDesc, actionDesc)
+    agent = OptionAgent(stateDesc, actionDesc)
     #rend = PygameRenderer(env)
     rend = None
     episode_lengths = run_experiment(env, agent, rend, episodes = N_EPISODES)
     q.put(episode_lengths)
 
 #run_iteration(worldfnames[0]) #ensures a single run runs successfully...
+print("Options")
 lightworldfpaths = [f for f in worldfnames for _ in range(N_DUPS)]
 pool = mp.Pool(8)
 pool.map(run_iteration, lightworldfpaths)
