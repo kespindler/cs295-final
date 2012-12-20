@@ -66,7 +66,7 @@ class SarsaAgent(Agent):
         self.gamma = gamma
         #self.slambda = slambda
         hist_threshold = int(np.log(traceThreshold)/np.log(slambda))
-        self.eligibility = np.array([slambda**i for i in range(hist_threshold)])
+        self.eligibility = np.array([slambda**i for i in range(1,hist_threshold)])
         self.epsilon = epsilon
         self.decay = decay
         #self.traceThreshold = 0.0001
@@ -88,10 +88,8 @@ class SarsaAgent(Agent):
             # Choose randomly or greedily?
             if random() > self.epsilon:
                 # Greedily choose max; if tie, break randomly
-                #print availableActions
                 i = np.where(availableActions == availableActions.max())
                 i = np.array(choice(zip(*i)))
-                #print(i)
             else:
                 # totally random
                 i = np.array(tuple(randint(0, x-1) for x in self.actionDesc))
@@ -122,7 +120,8 @@ class SarsaAgent(Agent):
             
             # update current qvalue for s,a in table
             delta = r + self.gamma * qnext - q
-            newq = q + self.alpha * delta
+            factor = self.alpha * delta
+            newq = q + factor
             self.qTable[sa] = newq
             
             # compute backup
@@ -133,16 +132,17 @@ class SarsaAgent(Agent):
             
             # backup
             #eligibility = self.slambda
-            factor = self.alpha * delta
             for state, action, elig in zip(self.prev_states, self.prev_actions, self.eligibility):
+                sa = state + action
+                self.qTable[sa] += factor * elig
+                
                 #state = prevs[i]
                 #action = preva[i]
                 
-                sa = state + action
                 #newq = self.qTable[sa] + factor * eligibility
                 #print self.qTable[sa], factor*elig
                 #if not isinf(self.qTable[sa]):
-                self.qTable[sa] += factor * elig
+                
                 #print zip(*np.where(np.isinf(self.qTable)))
                 
                 # decay trace, and terminate if trace is negligible

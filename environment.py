@@ -73,6 +73,7 @@ class Lightworld(Environment):
         return tuple([r,x,y,h,l]+rgbs)
     
     def calculate_state(self, pos):
+        currRoom = self.room
         r = self.room
         x,y = pos
         h = 1 if self.agent_holding_key else 0
@@ -108,7 +109,7 @@ class Lightworld(Environment):
         #        #fields = filter_states(self.states, field)
         #        #rgbs.append(0 if not fields else 
         #        #        max(0, 1. - manhattan_dist(pos, fields[0])/20.))
-        state = State(r,int(x),int(y),h,l,*rgbs)
+        state = State(currRoom,int(x),int(y),h,l,*rgbs)
         return state
 
     def new_state(self):

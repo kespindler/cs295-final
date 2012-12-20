@@ -1,6 +1,7 @@
 from random import random, choice
 from utility import filter_states
 from environment import manhattan_dist, expand_state, Lightworld
+from agent import SarsaAgent
 import search
 from numpy import array
 

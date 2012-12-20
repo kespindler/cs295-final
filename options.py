@@ -54,7 +54,7 @@ class DoorOption(Option):
         return (state.r > self.last_room)
 
     def canInitialize(self, state):
-        self.last_room = 0
+        self.last_room = state.r
         return True # Maybe want to modify this.
 
 class OptionAgent(SarsaAgent):
