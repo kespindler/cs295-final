@@ -36,11 +36,11 @@ class DoorCOption(COption):
     def canTerminate(self, state):
         if random() < COption.opt_epsilon:
             return True
-        return (state.r > self.last_room)
+        return (state.r != self.last_room)
 
     def canInitialize(self, state):
         if state.l == 0:
-            self.last_room = 0
+            self.last_room = state.r
             return True # Maybe want to modify this.
 
 
@@ -49,7 +49,7 @@ class COptionAgent(SarsaAgent):
     """ Learns over Agent options
     """
     optionEnum = enum(KEY=0, LOCK=1, DOOR=2)
-    optionReward = 1
+    optionReward = 10
     
     def __init__(self, stateDesc, agentStateOffset, actionDesc):
         stateDim = len(stateDesc) - agentStateOffset

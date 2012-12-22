@@ -62,6 +62,7 @@ class SarsaAgent(Agent):
         self.actionDesc = actionDesc
         self.actionDim = len(self.actionDesc)
         self.qTable = np.zeros(stateDesc + actionDesc)
+        self.qTable[:] = 500
         self.alpha = alpha
         self.gamma = gamma
         #self.slambda = slambda

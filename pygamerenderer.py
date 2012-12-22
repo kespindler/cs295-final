@@ -110,7 +110,7 @@ class PygameRenderer(RenderEngine):
             for v, c, i in zip(qvals, [RED, GREEN, BLUE], range(3)):
                 c = tuple(int(i * v) for i in c)
                 self.screen.fill(c, (x+i*w,y,w,h))
-        elif self.agent is not None:
+        elif self.agent is not None and hasattr(self.agent, 'qTable'):
             # do triangle visu
             max_val = int(1 + self.agent.qTable.max())
             self.fill_triangle(state, max_val)

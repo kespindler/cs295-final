@@ -51,7 +51,7 @@ class DoorOption(Option):
     def canTerminate(self, state):
         if random() < Option.opt_epsilon:
             return True
-        return (state.r > self.last_room)
+        return (state.r != self.last_room)
 
     def canInitialize(self, state):
         self.last_room = state.r

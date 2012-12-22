@@ -9,7 +9,7 @@ class GradientDescentSarsaAgent(Agent):
     """
     # only works with alpha = 0.0000001
     def __init__(self, stateDim, stateOffset, actionDesc,
-                alpha = 0.00001, gamma = 0.99, slambda = 0, epsilon = 0.5, decay = 0.995, traceThreshold = 0.0001):
+                alpha = 0.001, gamma = 0.99, slambda = 0, epsilon = 0.5, decay = 0.995, traceThreshold = 0.0001):
         super(GradientDescentSarsaAgent, self).__init__()
         print(alpha)
         self.stateDim = stateDim
